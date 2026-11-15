@@ -1,90 +1,113 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>순천 직통 노선 검색</title>
-  <style>
-    :root {
-      --bg-body: #f2f4f7;
-      --bg-header: #ffffff;
-      --bg-card: #ffffff;
-      --bg-input: #f9fafb;
-      --bg-stop: #f2f4f6;
-      --text-main: #191f28;
-      --text-sub: #4e5968;
-      --text-muted: #8b95a1;
-      --border-color: #e5e8eb;
-      --primary: #3182f6;
-      --primary-light: #e8f3ff;
-      --primary-text: #1b64da;
-      --shadow: 0 2px 8px rgba(0,0,0,0.06);
-      --card-shadow: 0 1px 4px rgba(0,0,0,0.04);
-      
-      /* 기점 / 회차지 / 주의구간 색상 (라이트) */
-      --origin-bg: #e6fcf5;
-      --origin-text: #087f5b;
-      --origin-border: #63e6be;
-      
-      --end-bg: #e7f5ff;
-      --end-text: #1864ab;
-      --end-border: #4dabf7;
-      
-      --imp-bg: #fff0f0;
-      --imp-text: #c92a2a;
-      --imp-border: #ffa8a8;
-    }
-
-    body.dark {
-      --bg-body: #101318;
-      --bg-header: #191d24;
-      --bg-card: #1e232b;
-      --bg-input: #262c36;
-      --bg-stop: #2a303c;
-      --text-main: #f2f4f6;
-      --text-sub: #b0b8c1;
-      --text-muted: #76808f;
-      --border-color: #2f3642;
-      --primary: #4593fc;
-      --primary-light: #1e324d;
-      --primary-text: #74b2ff;
-      --shadow: 0 2px 10px rgba(0,0,0,0.4);
-      --card-shadow: 0 2px 6px rgba(0,0,0,0.25);
-
-      /* 기점 / 회차지 / 주의구간 색상 (다크 - 고대비 가독성 최적화) */
-      --origin-bg: #0c382c;
-      --origin-text: #63e6be;
-      --origin-border: #12b886;
-
-      --end-bg: #133252;
-      --end-text: #74c0fc;
-      --end-border: #339af0;
-
-      --imp-bg: #45181c;
-      --imp-text: #ff8787;
-      --imp-border: #fa5252;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
-    body { background-color: var(--bg-body); color: var(--text-main); padding-bottom: 40px; transition: background-color 0.2s, color 0.2s; }
-    
-    .header { position: sticky; top: 0; background: var(--bg-header); padding: 14px 16px; box-shadow: var(--shadow); z-index: 100; border-bottom: 1px solid var(--border-color); }
-    .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-    .header h1 { font-size: 18px; font-weight: 800; color: var(--text-main); }
-    
-    .dark-toggle { background: var(--bg-stop); color: var(--text-main); border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px; }
-    
-    .search-box { position: relative; display: flex; align-items: center; }
-    .search-box input { width: 100%; padding: 11px 38px 11px 14px; font-size: 16px; border: 2px solid var(--primary); border-radius: 12px; outline: none; background: var(--bg-input); color: var(--text-main); }
-    .search-box input::placeholder { color: var(--text-muted); }
-    .clear-btn { position: absolute; right: 10px; background: var(--text-muted); color: var(--bg-header); border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 13px; font-weight: bold; cursor: pointer; display: none; align-items: center; justify-content: center; }
-    
-    .tabs { display: flex; gap: 6px; overflow-x: auto; padding-top: 10px; scrollbar-width: none; }
-    .tabs::-webkit-scrollbar { display: none; }
-    .tab { padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border-color); background: var(--bg-card); font-size: 13px; font-weight: 700; color: var(--text-sub); white-space: nowrap; cursor: pointer; }
-    .tab.active { background: var(--primary); color: #ffffff; border-color: var(--primary); }
-
-    /* 노선 번호 퀵 버튼 영역 */
-    .quick-nums { display: flex; gap: 6px; overflow-x: auto; padding-top: 8px; margin-top: 8px; border-top: 1px dashed var(--border-color); scrollbar-width: none; }
-    .quick-nums::-webkit-scrollbar { display: none; }
-    .q-btn { padding: 6px 11px; border-radius: 8px; border: 1px solid var(--border-color
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>순천 직통 노선 검색</title>
+<style>
+:root{--bg-body:#f2f4f7;--bg-header:#fff;--bg-card:#fff;--bg-input:#f9fafb;--bg-stop:#f2f4f6;--text-main:#191f28;--text-sub:#4e5968;--text-muted:#8b95a1;--border-color:#e5e8eb;--primary:#3182f6;--primary-light:#e8f3ff;--primary-text:#1b64da;--shadow:0 2px 8px rgba(0,0,0,.06);--card-shadow:0 1px 4px rgba(0,0,0,.04);--origin-bg:#e6fcf5;--origin-text:#087f5b;--origin-border:#63e6be;--end-bg:#e7f5ff;--end-text:#1864ab;--end-border:#4dabf7;--imp-bg:#fff0f0;--imp-text:#c92a2a;--imp-border:#ffa8a8}
+body.dark{--bg-body:#101318;--bg-header:#191d24;--bg-card:#1e232b;--bg-input:#262c36;--bg-stop:#2a303c;--text-main:#f2f4f6;--text-sub:#b0b8c1;--text-muted:#76808f;--border-color:#2f3642;--primary:#4593fc;--primary-light:#1e324d;--primary-text:#74b2ff;--shadow:0 2px 10px rgba(0,0,0,.4);--card-shadow:0 2px 6px rgba(0,0,0,.25);--origin-bg:#0c382c;--origin-text:#63e6be;--origin-border:#12b886;--end-bg:#133252;--end-text:#74c0fc;--end-border:#339af0;--imp-bg:#45181c;--imp-text:#ff8787;--imp-border:#fa5252}
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif}
+body{background-color:var(--bg-body);color:var(--text-main);padding-bottom:40px;transition:background-color .2s,color .2s}
+.header{position:sticky;top:0;background:var(--bg-header);padding:14px 16px;box-shadow:var(--shadow);z-index:100;border-bottom:1px solid var(--border-color)}
+.header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.header h1{font-size:18px;font-weight:800;color:var(--text-main)}
+.dark-toggle{background:var(--bg-stop);color:var(--text-main);border:1px solid var(--border-color);padding:6px 12px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:4px}
+.search-box{position:relative;display:flex;align-items:center}
+.search-box input{width:100%;padding:11px 38px 11px 14px;font-size:16px;border:2px solid var(--primary);border-radius:12px;outline:none;background:var(--bg-input);color:var(--text-main)}
+.search-box input::placeholder{color:var(--text-muted)}
+.clear-btn{position:absolute;right:10px;background:var(--text-muted);color:var(--bg-header);border:none;border-radius:50%;width:22px;height:22px;font-size:13px;font-weight:700;cursor:pointer;display:none;align-items:center;justify-content:center}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-top:10px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:6px 12px;border-radius:20px;border:1px solid var(--border-color);background:var(--bg-card);font-size:13px;font-weight:700;color:var(--text-sub);white-space:nowrap;cursor:pointer}
+.tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.quick-nums{display:flex;gap:6px;overflow-x:auto;padding-top:8px;margin-top:8px;border-top:1px dashed var(--border-color);scrollbar-width:none}
+.quick-nums::-webkit-scrollbar{display:none}
+.q-btn{padding:6px 11px;border-radius:8px;border:1px solid var(--border-color);background:var(--bg-stop);color:var(--text-main);font-size:14px;font-weight:800;white-space:nowrap;cursor:pointer}
+.q-btn.active{background:#ff922b;color:#fff;border-color:#ff922b}
+.container{padding:14px 16px;max-width:600px;margin:0 auto}
+.legend{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--text-sub);margin-bottom:10px;align-items:center}
+.legend-item{display:flex;align-items:center;gap:4px;font-weight:600}
+.dot{width:10px;height:10px;border-radius:3px;display:inline-block}
+.dot.origin{background:var(--origin-border)}
+.dot.end{background:var(--end-border)}
+.dot.imp{background:var(--imp-border)}
+.count{font-size:13px;color:var(--text-muted);margin-bottom:10px;font-weight:600}
+.card{background:var(--bg-card);border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:var(--card-shadow);border:1px solid var(--border-color)}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.title-wrap{display:flex;align-items:center;gap:8px}
+.bus-num{font-size:22px;font-weight:900;color:var(--primary);letter-spacing:-.5px}
+.group-badge{font-size:12px;background:var(--primary-light);color:var(--primary-text);padding:4px 8px;border-radius:6px;font-weight:700}
+.route-flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:14.5px;line-height:1.5;color:var(--text-main)}
+.stop{background:var(--bg-stop);padding:5px 9px;border-radius:7px;font-weight:500;border:1px solid transparent}
+.stop.origin{background:var(--origin-bg);color:var(--origin-text);border:1.5px solid var(--origin-border);font-weight:800}
+.stop.end{background:var(--end-bg);color:var(--end-text);border:1.5px solid var(--end-border);font-weight:800}
+.stop.important{background:var(--imp-bg);color:var(--imp-text);border:1.5px solid var(--imp-border);font-weight:800}
+.badge-tag{font-size:10px;padding:1px 4px;border-radius:4px;margin-right:4px;vertical-align:middle;font-weight:900}
+.origin .badge-tag{background:var(--origin-border);color:#000}
+.end .badge-tag{background:var(--end-border);color:#000}
+.stop.highlight{background:#ffd43b!important;font-weight:900!important;color:#111!important;border:1.5px solid #f59f00!important}
+.arrow{color:var(--text-muted);font-size:11px;font-weight:700}
+.note{margin-top:12px;padding:9px 11px;background:var(--imp-bg);color:var(--imp-text);border:1px solid var(--imp-border);border-radius:8px;font-size:13.5px;font-weight:700}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-top">
+    <h1>🚌 순천 직통 노선 검색</h1>
+    <button class="dark-toggle" id="darkToggle">🌙 다크모드</button>
+  </div>
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="경유지(예: 선평, 율촌) 또는 번호 검색" autocomplete="off" />
+    <button class="clear-btn" id="clearBtn">✕</button>
+  </div>
+  <div class="tabs" id="tabContainer">
+    <button class="tab active" data-group="ALL">전체</button>
+    <button class="tab" data-group="60번대">60번대</button>
+    <button class="tab" data-group="80번대">80번대</button>
+    <button class="tab" data-group="90·20번대">90·20번대</button>
+    <button class="tab" data-group="50번대">50번대</button>
+    <button class="tab" data-group="70번대">70번대</button>
+  </div>
+  <div class="quick-nums" id="quickNums"></div>
+</div>
+<div class="container">
+  <div class="legend">
+    <span class="legend-item"><i class="dot origin"></i>기점(출발)</span>
+    <span class="legend-item"><i class="dot end"></i>회차지(종점)</span>
+    <span class="legend-item"><i class="dot imp"></i>주의·분기 구간</span>
+  </div>
+  <div class="count" id="resultCount">총 0개 노선</div>
+  <div id="routeList"></div>
+</div>
+<script>
+const routes = [
+  { num: "60", group: "60번대", stops: [{ name: "제일고" }, { name: "선평삼거리" }, { name: "학구삼거리" }, { name: "서평교차로(승주읍사거리)" }, { name: "쌍암기사식당" }, { name: "서동마을" }] },
+  { num: "61", group: "60번대", stops: [{ name: "제일고" }, { name: "가곡삼거리" }, { name: "강변고가교(로터리까지)" }, { name: "청암대(박람회 서문측으로)" }, { name: "연동삼거리" }, { name: "낙안읍성(주차장)" }] },
+  { num: "62", group: "60번대", stops: [{ name: "제일고" }, { name: "가곡삼거리" }, { name: "강변고가교(로터리까지)" }, { name: "청암대(박람회 서문측으로)" }, { name: "연동삼거리" }, { name: "초곡마을입구" }, { name: "초곡마을" }] },
+  { num: "63", group: "60번대", stops: [{ name: "제일고" }, { name: "선평삼거리" }, { name: "학구삼거리" }, { name: "서평교차로(승주읍사거리)" }, { name: "문길삼거리(세븐일레븐)" }, { name: "송광사삼거리(송광사)" }, { name: "곡천삼거리(곡천터미널)" }, { name: "외장(외우산비석)" }] },
+  { num: "64", group: "60번대", stops: [{ name: "제일고" }, { name: "가곡삼거리" }, { name: "강변고가교(로터리까지)" }, { name: "청암대(박람회 서문측으로)" }, { name: "상사면사무소" }, { name: "상사초등학교" }, { name: "응령마을" }] },
+  { num: "66", group: "60번대", stops: [{ name: "제일고" }, { name: "가곡삼거리" }, { name: "강변고가교(로터리까지)" }, { name: "청암대(박람회 서문측으로)" }, { name: "연동삼거리" }, { name: "효천고등학교" }, { name: "인월사거리" }, { name: "인안초등학교" }] },
+  { num: "82", group: "80번대", stops: [{ name: "제일고" }, { name: "가곡삼거리" }, { name: "강변고가교(로터리까지)" }, { name: "청암대(박람회 서문측으로)" }, { name: "연동삼거리" }, { name: "효천고" }, { name: "상림사거리" }, { name: "진목입구" }, { name: "진목" }] },
+  { num: "84", group: "80번대", stops: [{ name: "제일고" }, { name: "가곡삼거리" }, { name: "강변고가교(로터리까지)" }, { name: "청암대(박람회 서문측으로)" }, { name: "연동삼거리" }, { name: "효천고" }, { name: "상림사거리" }, { name: "사계절삼거리(사계절오일뱅크)" }, { name: "구룡교방면" }, { name: "송산초등학교 방면" }, { name: "대동마을 방면" }, { name: "대동" }] },
+  { num: "85", group: "80번대", stops: [{ name: "제일고" }, { name: "가곡삼거리" }, { name: "강변고가교(로터리까지)" }, { name: "청암대(박람회 서문측으로)" }, { name: "연동삼거리" }, { name: "효천고" }, { name: "상림사거리" }, { name: "진목입구" }, { name: "죽림삼거리" }, { name: "거차" }] },
+  { num: "86", group: "80번대", stops: [{ name: "제일고" }, { name: "가곡삼거리" }, { name: "강변고가교(로터리까지)" }, { name: "청암대(박람회 서문측으로)" }, { name: "연동삼거리" }, { name: "효천고" }, { name: "상림사거리" }, { name: "별량면사무소 방면" }, { name: "별량면 고가다리밑" }, { name: "반곡" }] },
+  { num: "95", group: "90·20번대", stops: [{ name: "제일고" }, { name: "선평삼거리" }, { name: "상비교차로(성가롤로)" }, { name: "신대교차로" }, { name: "남해고속도로(시점) 여수 율촌 방면", important: true }, { name: "율촌터널" }, { name: "여수공항, 율촌 방면(율촌교차로)", important: true }, { name: "충만한교회(여수시청, 상봉 방면)", important: true }, { name: "상봉삼거리(소망재가복지센터)" }, { name: "광암마을회관(다리쪽)" }, { name: "봉전마을회관" }] },
+  { num: "96", group: "90·20번대", stops: [{ name: "제일고" }, { name: "선평삼거리" }, { name: "상비교차로(성가롤로)" }, { name: "신대교차로" }, { name: "산단교차로" }, { name: "해룡육교" }, { name: "호두삼거리" }, { name: "신풍삼거리(여수공항)" }, { name: "애양병원" }, { name: "도성리마을회관" }], note: "※ 여수 버스 출차 후 진입" },
+  { num: "97", group: "90·20번대", stops: [{ name: "제일고" }, { name: "선평삼거리" }, { name: "상비교차로(성가롤로)" }, { name: "신대교차로" }, { name: "남해고속도로(시점) 여수 율촌 방면", important: true }, { name: "율촌터널" }, { name: "여수공항, 율촌 방면(율촌교차로)", important: true }, { name: "충만한교회(순천, 해룡 방면)", important: true }, { name: "하사" }] },
+  { num: "25", group: "90·20번대", stops: [{ name: "제일고" }, { name: "선평삼거리" }, { name: "상비교차로(성가롤로)" }, { name: "신대교차로" }, { name: "산단교차로 [좌]" }, { name: "현대제철(신성교) [좌]" }, { name: "왜성(정류장) [우]" }] },
+  { num: "56", group: "50번대", stops: [{ name: "제일고" }, { name: "선평삼거리" }, { name: "왕지IC 램프F교" }, { name: "NC백화점 사거리 [좌]" }, { name: "범암교(왕운세차장) [좌]" }, { name: "대동(왕조가든)" }] },
+  { num: "59", group: "50번대", stops: [{ name: "제일고" }, { name: "용당 삼산로 방면 [좌](원용당교)" }, { name: "용당 신흥길 방면" }, { name: "봉화터널" }, { name: "한듬정육점 측 [좌]" }, { name: "봉화그린빌" }, { name: "조례대림A 방면" }] },
+  { num: "77", group: "70번대", stops: [{ name: "제일고" }, { name: "선평삼거리" }, { name: "상비교차로(성가롤로)" }, { name: "덕례사거리" }, { name: "터미널교차로" }, { name: "광양터미널(도립미술관)" }] },
+  { num: "777", group: "70번대", stops: [{ name: "제일고" }, { name: "선평삼거리" }, { name: "상비교차로(성가롤로)" }, { name: "덕례사거리" }, { name: "터미널교차로" }, { name: "광양터미널(도립미술관)" }] }
+];
+const searchInput=document.getElementById("searchInput"),clearBtn=document.getElementById("clearBtn"),routeList=document.getElementById("routeList"),resultCount=document.getElementById("resultCount"),tabs=document.querySelectorAll(".tab"),quickNumsContainer=document.getElementById("quickNums"),darkToggle=document.getElementById("darkToggle");
+let currentGroup="ALL",selectedQuickNum=null;
+if(localStorage.getItem("bus_dark_mode")==="true"){document.body.classList.add("dark");darkToggle.textContent="☀️ 라이트"}
+darkToggle.addEventListener("click",()=>{const e=document.body.classList.toggle("dark");darkToggle.textContent=e?"☀️ 라이트":"🌙 다크모드",localStorage.setItem("bus_dark_mode",e)});
+function renderQuickButtons(){const e=routes.filter(e=>"ALL"===currentGroup||e.group===currentGroup);quickNumsContainer.innerHTML=e.map(e=>`<button class="q-btn ${selectedQuickNum===e.num?"active":""}" data-num="${e.num}">${e.num}</button>`).join(""),document.querySelectorAll(".q-btn").forEach(e=>{e.addEventListener("click",()=>{const t=e.dataset.num;selectedQuickNum=selectedQuickNum===t?null:(searchInput.value="",t),renderQuickButtons(),render()})})}
+function render(){const e=searchInput.value.trim().toLowerCase();clearBtn.style.display=e?"flex":"none";const t=routes.filter(t=>("ALL"===currentGroup||t.group===currentGroup)&&(selectedQuickNum?t.num===selectedQuickNum:!e||t.num.toLowerCase().includes(e)||t.stops.some(t=>t.name.toLowerCase().includes(e))||(t.note?t.note.toLowerCase().includes(e):!1)));resultCount.textContent=selectedQuickNum?`${selectedQuickNum}번 노선 선택됨 (버튼 재터치 시 전체보기)`:`표시 노선: ${t.length}개`,routeList.innerHTML="",t.forEach(t=>{const n=document.createElement("div");n.className="card";const r=t.stops.map((n,r)=>{const o=0===r,a=r===t.stops.length-1,s=e&&n.name.toLowerCase().includes(e);let c="",l="";return o?(c="origin",l='<span class="badge-tag">기점</span>'):a?(c="end",l='<span class="badge-tag">회차</span>'):n.important&&(c="important"),`<span class="stop ${c} ${s?"highlight":""}">${l}${n.name}</span>${a?"":'<span class="arrow">▶</span>'}`}).join(""),o=t.note?`<div class="note">${t.note}</div>`:"";n.innerHTML=`<div class="card-header"><div class="title-wrap"><span class="bus-num">${t.num}번</span></div><span class="group-badge">${t.group}</span></div><div class="route-flow">${r}</div>${o}`,routeList.appendChild(n)})}
+searchInput.addEventListener("input",()=>{selectedQuickNum=null,renderQuickButtons(),render()}),clearBtn.addEventListener("click",()=>{searchInput.value="",searchInput.focus(),render()}),tabs.forEach(e=>{e.addEventListener("click",()=>{tabs.forEach(e=>e.classList.remove("active")),e.classList.add("active"),currentGroup=e.dataset.group,selectedQuickNum=null,renderQuickButtons(),render()})}),renderQuickButtons(),render();
+</script>
+</body>
+</html>
