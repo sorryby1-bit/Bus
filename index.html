@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>순천 직통 노선 검색</title>
+<title>순천 직통 노선 가이드</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
 :root{
   --bg-body:#f2f4f7;--bg-header:#fff;--bg-card:#fff;--bg-input:#f9fafb;--bg-stop:#f2f4f6;
@@ -13,13 +15,6 @@
   --origin-bg:#e6fcf5;--origin-text:#087f5b;--origin-border:#63e6be;
   --end-bg:#e7f5ff;--end-text:#1864ab;--end-border:#4dabf7;
   --imp-bg:#fff0f0;--imp-text:#c92a2a;--imp-border:#ffa8a8;
-  /* 계통도 전용 색상 */
-  --trunk-line:#12b886;--trunk-bg:#e6fcf5;--trunk-text:#087f5b;
-  --pink-bg:#fff0f6;--pink-border:#f783ac;--pink-text:#a61e4d;
-  --brown-bg:#f8f0e6;--brown-border:#d99b66;--brown-text:#7f4f24;
-  --purple-bg:#f3f0ff;--purple-border:#b197fc;--purple-text:#5f3dc4;
-  --orange-bg:#fff4e6;--orange-border:#ffa94d;--orange-text:#d9480f;
-  --blue-bg:#e7f5ff;--blue-border:#74c0fc;--blue-text:#1864ab;
 }
 body.dark{
   --bg-body:#101318;--bg-header:#191d24;--bg-card:#1e232b;--bg-input:#262c36;--bg-stop:#2a303c;
@@ -29,24 +24,15 @@ body.dark{
   --origin-bg:#0c382c;--origin-text:#63e6be;--origin-border:#12b886;
   --end-bg:#133252;--end-text:#74c0fc;--end-border:#339af0;
   --imp-bg:#45181c;--imp-text:#ff8787;--imp-border:#fa5252;
-  /* 계통도 다크 색상 */
-  --trunk-line:#20c997;--trunk-bg:#0c382c;--trunk-text:#63e6be;
-  --pink-bg:#3b1526;--pink-border:#f06595;--pink-text:#faa2c1;
-  --brown-bg:#382618;--brown-border:#d99b66;--brown-text:#f3d9fa;
-  --brown-text:#ffd8a8;
-  --purple-bg:#271c47;--purple-border:#9775fa;--purple-text:#d0bfff;
-  --orange-bg:#3d200c;--orange-border:#ff922b;--orange-text:#ffc078;
-  --blue-bg:#133252;--blue-border:#4dabf7;--blue-text:#a5d8ff;
 }
 *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif}
-body{background-color:var(--bg-body);color:var(--text-main);padding-bottom:44px;transition:background-color .2s,color .2s}
-.header{position:sticky;top:0;background:var(--bg-header);padding:12px 16px 10px;box-shadow:var(--shadow);z-index:100;border-bottom:1px solid var(--border-color)}
+body{background-color:var(--bg-body);color:var(--text-main);padding-bottom:30px;transition:background-color .2s,color .2s}
+.header{position:sticky;top:0;background:var(--bg-header);padding:12px 16px 10px;box-shadow:var(--shadow);z-index:1000;border-bottom:1px solid var(--border-color)}
 .header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .header h1{font-size:18px;font-weight:800;color:var(--text-main)}
 .dark-toggle{background:var(--bg-stop);color:var(--text-main);border:1px solid var(--border-color);padding:6px 12px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer}
 
-/* 메인 모드 전환 탭 (검색 vs 분기 계통도) */
-.mode-switch{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--bg-stop);padding:4px;border-radius:12px;margin-bottom:10px}
+.mode-switch{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--bg-stop);padding:4px;border-radius:12px;margin-bottom:8px}
 .mode-btn{padding:8px 0;border:none;border-radius:9px;background:transparent;color:var(--text-sub);font-size:14px;font-weight:800;cursor:pointer;transition:.15s}
 .mode-btn.active{background:var(--bg-card);color:var(--primary);box-shadow:0 1px 3px rgba(0,0,0,.12)}
 
@@ -55,7 +41,7 @@ body{background-color:var(--bg-body);color:var(--text-main);padding-bottom:44px;
 .search-box input::placeholder{color:var(--text-muted)}
 .clear-btn{position:absolute;right:10px;background:var(--text-muted);color:var(--bg-header);border:none;border-radius:50%;width:22px;height:22px;font-size:13px;font-weight:700;cursor:pointer;display:none;align-items:center;justify-content:center}
 
-.tabs{display:flex;gap:6px;overflow-x:auto;padding-top:9px;scrollbar-width:none}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-top:8px;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
 .tab{padding:6px 12px;border-radius:20px;border:1px solid var(--border-color);background:var(--bg-card);font-size:13px;font-weight:700;color:var(--text-sub);white-space:nowrap;cursor:pointer}
 .tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
@@ -65,7 +51,7 @@ body{background-color:var(--bg-body);color:var(--text-main);padding-bottom:44px;
 .q-btn{padding:5px 11px;border-radius:8px;border:1px solid var(--border-color);background:var(--bg-stop);color:var(--text-main);font-size:14px;font-weight:800;white-space:nowrap;cursor:pointer}
 .q-btn.active{background:#ff922b;color:#fff;border-color:#ff922b}
 
-.container{padding:14px 16px;max-width:600px;margin:0 auto}
+.container{padding:14px 16px;max-width:680px;margin:0 auto}
 .legend{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--text-sub);margin-bottom:10px;align-items:center}
 .legend-item{display:flex;align-items:center;gap:4px;font-weight:600}
 .dot{width:10px;height:10px;border-radius:3px;display:inline-block}
@@ -90,39 +76,20 @@ body{background-color:var(--bg-body);color:var(--text-main);padding-bottom:44px;
 .arrow{color:var(--text-muted);font-size:11px;font-weight:700}
 .note{margin-top:12px;padding:9px 11px;background:var(--imp-bg);color:var(--imp-text);border:1px solid var(--imp-border);border-radius:8px;font-size:13.5px;font-weight:700}
 
-/* 분기 계통도 스타일 */
-.diagram-card{background:var(--bg-card);border-radius:16px;padding:16px;margin-bottom:16px;border:1px solid var(--border-color);box-shadow:var(--card-shadow)}
-.diag-title{font-size:16px;font-weight:900;margin-bottom:4px;color:var(--text-main);display:flex;align-items:center;justify-content:space-between}
-.diag-sub{font-size:12.5px;color:var(--text-muted);margin-bottom:14px;font-weight:600}
+/* 실제 지도 화면 스타일 */
+.map-wrap{padding:10px 14px;max-width:800px;margin:0 auto}
+.map-filters{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none}
+.map-filters::-webkit-scrollbar{display:none}
+.m-tab{padding:6px 12px;border-radius:20px;border:1px solid var(--border-color);background:var(--bg-card);font-size:12.5px;font-weight:800;color:var(--text-sub);white-space:nowrap;cursor:pointer}
+.m-tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
 
-/* 초록색 공통 줄기 */
-.trunk-box{position:relative;padding-left:22px;margin-left:6px;border-left:5px solid var(--trunk-line)}
-.trunk-node{position:relative;margin-bottom:10px;display:flex;align-items:center;gap:8px}
-.trunk-node::before{content:"";position:absolute;left:-29px;width:13px;height:13px;border-radius:50%;background:var(--trunk-line);border:3px solid var(--bg-card)}
-.trunk-pill{background:var(--trunk-bg);color:var(--trunk-text);border:1.5px solid var(--trunk-line);padding:5px 10px;border-radius:8px;font-size:14px;font-weight:800}
-.trunk-tag{font-size:11px;background:var(--trunk-line);color:#fff;padding:2px 6px;border-radius:5px;font-weight:800}
+.color-legend{display:flex;flex-wrap:wrap;gap:6px;background:var(--bg-card);padding:9px 11px;border-radius:12px;border:1px solid var(--border-color);margin-bottom:10px;font-size:12px;font-weight:700}
+.c-chip{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:6px;background:var(--bg-stop);cursor:pointer;border:1.5px solid transparent}
+.c-chip.selected{border-color:var(--text-main);transform:scale(1.03)}
+.c-line{width:14px;height:5px;border-radius:3px;display:inline-block}
 
-/* 분기 갈래 박스 */
-.branch-group{margin:10px 0 14px 0;display:flex;flex-direction:column;gap:8px}
-.branch-item{position:relative;padding:10px 12px;border-radius:11px;border-width:1.5px;border-style:solid;display:flex;flex-direction:column;gap:5px}
-.branch-head{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.b-num{font-size:15px;font-weight:900;padding:2px 8px;border-radius:6px;color:#fff}
-.b-dir{font-size:12px;font-weight:800;padding:2px 6px;border-radius:5px;background:rgba(0,0,0,.08)}
-body.dark .b-dir{background:rgba(255,255,255,.12)}
-.b-path{font-size:13.5px;font-weight:700;line-height:1.45}
-
-/* 분기 색상 테마 */
-.c-pink{background:var(--pink-bg);border-color:var(--pink-border);color:var(--pink-text)}
-.c-pink .b-num{background:#e64980}
-.c-brown{background:var(--brown-bg);border-color:var(--brown-border);color:var(--brown-text)}
-.c-brown .b-num{background:#b0723c}
-.c-purple{background:var(--purple-bg);border-color:var(--purple-border);color:var(--purple-text)}
-.c-purple .b-num{background:#7950f2}
-.c-orange{background:var(--orange-bg);border-color:var(--orange-border);color:var(--orange-text)}
-.c-orange .b-num{background:#f76707}
-.c-blue{background:var(--blue-bg);border-color:var(--blue-border);color:var(--blue-text)}
-.c-blue .b-num{background:#228be6}
-
+#map{width:100%;height:62vh;min-height:420px;border-radius:16px;border:1.5px solid var(--border-color);box-shadow:var(--card-shadow);z-index:1}
+.map-status{font-size:11.5px;color:var(--text-muted);margin-top:6px;text-align:right;font-weight:600}
 .hidden{display:none!important}
 </style>
 </head>
@@ -136,7 +103,7 @@ body.dark .b-dir{background:rgba(255,255,255,.12)}
   
   <div class="mode-switch">
     <button class="mode-btn active" id="btnModeSearch">🔍 노선 검색</button>
-    <button class="mode-btn" id="btnModeMap">🗺️ 분기 계통도</button>
+    <button class="mode-btn" id="btnModeMap">🗺️ 실제 노선 지도</button>
   </div>
 
   <div id="searchControls">
@@ -167,126 +134,18 @@ body.dark .b-dir{background:rgba(255,255,255,.12)}
   <div id="routeList"></div>
 </div>
 
-<!-- 2. 색상 분기 계통도 화면 -->
-<div class="container hidden" id="viewMap">
-  <div class="legend" style="margin-bottom:14px">
-    <span class="legend-item"><i class="dot" style="background:var(--trunk-line)"></i>공통 메인 구간(초록)</span>
-    <span class="legend-item"><i class="dot" style="background:#e64980"></i>노선별 갈래 색상 구분</span>
+<!-- 2. 실제 도로 기반 색상 분기 지도 -->
+<div class="map-wrap hidden" id="viewMap">
+  <div class="map-filters" id="mapFilters">
+    <button class="m-tab active" data-mgroup="ALL">전체 노선망</button>
+    <button class="m-tab" data-mgroup="90·20번대">90·20번대 (율촌·해룡)</button>
+    <button class="m-tab" data-mgroup="연동축">60·80번대 (청암·연동·별량)</button>
+    <button class="m-tab" data-mgroup="승주축">60번대 (승주·송광사)</button>
+    <button class="m-tab" data-mgroup="시내광양">50·70번대 (시내·광양)</button>
   </div>
-
-  <!-- 권역 1: 90·20번대 -->
-  <div class="diagram-card">
-    <div class="diag-title"><span>① 90·20번대 (신대·율촌·해룡 방면)</span></div>
-    <div class="diag-sub">신대교차로에서 1차 분기 → 충만한교회에서 2차 분기</div>
-    <div class="trunk-box">
-      <div class="trunk-node"><span class="trunk-pill">제일고 (기점)</span><span class="trunk-tag">공통</span></div>
-      <div class="trunk-node"><span class="trunk-pill">선평삼거리 → 상비교차로(성가롤로)</span></div>
-      <div class="trunk-node"><span class="trunk-pill">신대교차로 (1차 분기점)</span></div>
-      
-      <div class="branch-group">
-        <div class="branch-item c-orange">
-          <div class="branch-head"><span class="b-num">25번</span><span class="b-dir">산단 좌회전 방면</span></div>
-          <div class="b-path">산단교차로 [좌] ▶ 현대제철(신성교) [좌] ▶ 왜성(정류장) [우]</div>
-        </div>
-        <div class="branch-item c-purple">
-          <div class="branch-head"><span class="b-num">96번</span><span class="b-dir">해룡·여수공항 방면</span></div>
-          <div class="b-path">산단교차로 ▶ 해룡육교 ▶ 호두삼거리 ▶ 신풍삼거리 ▶ 애양병원 ▶ 도성리마을회관</div>
-        </div>
-      </div>
-
-      <div class="trunk-node"><span class="trunk-pill">남해고속도로(시점) → 율촌터널 → 율촌교차로</span><span class="trunk-tag">95·97 공통</span></div>
-      <div class="trunk-node"><span class="trunk-pill">충만한교회 (2차 분기점)</span></div>
-
-      <div class="branch-group">
-        <div class="branch-item c-pink">
-          <div class="branch-head"><span class="b-num">97번</span><span class="b-dir">순천·해룡 방면 (직진)</span></div>
-          <div class="b-path">충만한교회(순천·해룡 방면) ▶ 하사 (회차)</div>
-        </div>
-        <div class="branch-item c-brown">
-          <div class="branch-head"><span class="b-num">95번</span><span class="b-dir">여수시청·상봉 방면</span></div>
-          <div class="b-path">충만한교회(상봉 방면) ▶ 상봉삼거리 ▶ 광암마을회관 ▶ 봉전마을회관 (회차)</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 권역 2: 60·80번대 (청암대·연동 축) -->
-  <div class="diagram-card">
-    <div class="diag-title"><span>② 60·80번대 (청암대·연동삼거리 축)</span></div>
-    <div class="diag-sub">청암대·연동삼거리까지 공통 직진 후 낙안·상사·별량으로 분기</div>
-    <div class="trunk-box">
-      <div class="trunk-node"><span class="trunk-pill">제일고 → 가곡삼거리 → 강변고가교</span><span class="trunk-tag">공통</span></div>
-      <div class="trunk-node"><span class="trunk-pill">청암대(박람회 서문측)</span></div>
-      
-      <div class="branch-group">
-        <div class="branch-item c-blue">
-          <div class="branch-head"><span class="b-num">64번</span><span class="b-dir">상사 방면 조기 분기</span></div>
-          <div class="b-path">상사면사무소 ▶ 상사초등학교 ▶ 응령마을 (회차)</div>
-        </div>
-      </div>
-
-      <div class="trunk-node"><span class="trunk-pill">연동삼거리 (핵심 분기점)</span></div>
-
-      <div class="branch-group">
-        <div class="branch-item c-pink">
-          <div class="branch-head"><span class="b-num">61번</span><span class="b-dir">낙안읍성 방면</span></div>
-          <div class="b-path">연동삼거리 ▶ 낙안읍성(주차장) (회차)</div>
-        </div>
-        <div class="branch-item c-brown">
-          <div class="branch-head"><span class="b-num">62번</span><span class="b-dir">초곡 방면</span></div>
-          <div class="b-path">연동삼거리 ▶ 초곡마을입구 ▶ 초곡마을 (회차)</div>
-        </div>
-      </div>
-
-      <div class="trunk-node"><span class="trunk-pill">효천고 (66번 및 80번대 공통)</span></div>
-
-      <div class="branch-group">
-        <div class="branch-item c-purple">
-          <div class="branch-head"><span class="b-num">66번</span><span class="b-dir">인안초 방면</span></div>
-          <div class="b-path">효천고 ▶ 인월사거리 ▶ 인안초등학교 (회차)</div>
-        </div>
-        <div class="branch-item c-orange">
-          <div class="branch-head"><span class="b-num">82·84·85·86번</span><span class="b-dir">상림사거리 이후 4갈래 분기</span></div>
-          <div class="b-path">
-            • <b>82번:</b> 상림 ▶ 진목입구 ▶ 진목<br/>
-            • <b>85번:</b> 상림 ▶ 진목입구 ▶ 죽림삼거리 ▶ 거차<br/>
-            • <b>84번:</b> 상림 ▶ 사계절삼거리 ▶ 구룡교 ▶ 송산초 ▶ 대동<br/>
-            • <b>86번:</b> 상림 ▶ 별량면사무소 ▶ 고가다리밑 ▶ 반곡
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 권역 3: 60번대 (승주·송광사 축) & 50·70번대 -->
-  <div class="diagram-card">
-    <div class="diag-title"><span>③ 승주·송광사(60·63) & 광양·시내(50·70)</span></div>
-    <div class="diag-sub">북부 방면 및 시내·광양 직통 갈래</div>
-    <div class="trunk-box">
-      <div class="trunk-node"><span class="trunk-pill">제일고 → 선평삼거리 → 학구 → 서평교차로</span><span class="trunk-tag">60·63 공통</span></div>
-      <div class="branch-group">
-        <div class="branch-item c-pink">
-          <div class="branch-head"><span class="b-num">60번</span><span class="b-dir">쌍암·서동 방면</span></div>
-          <div class="b-path">서평교차로 ▶ 쌍암기사식당 ▶ 서동마을</div>
-        </div>
-        <div class="branch-item c-brown">
-          <div class="branch-head"><span class="b-num">63번</span><span class="b-dir">송광사·외장 방면</span></div>
-          <div class="b-path">서평교차로 ▶ 문길삼거리 ▶ 송광사삼거리 ▶ 곡천터미널 ▶ 외장</div>
-        </div>
-        <div class="branch-item c-blue">
-          <div class="branch-head"><span class="b-num">77 · 777번</span><span class="b-dir">광양터미널 직통 (동일 코스)</span></div>
-          <div class="b-path">제일고 ▶ 선평 ▶ 상비교차로 ▶ 덕례사거리 ▶ 광양터미널</div>
-        </div>
-        <div class="branch-item c-purple">
-          <div class="branch-head"><span class="b-num">56 · 59번</span><span class="b-dir">시내권 직통</span></div>
-          <div class="b-path">
-            • <b>56번:</b> 선평 ▶ 왕지IC ▶ NC백화점[좌] ▶ 범암교[좌] ▶ 대동(왕조가든)<br/>
-            • <b>59번:</b> 원용당교[좌] ▶ 신흥길 ▶ 봉화터널 ▶ 한듬정육점[좌] ▶ 조례대림A
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <div class="color-legend" id="mapLegend"></div>
+  <div id="map"></div>
+  <div class="map-status" id="mapStatus">지도 위 동그라미(분기점)를 터치하면 상세 방향이 표시됩니다.</div>
 </div>
 
 <script>
@@ -313,10 +172,197 @@ const routes = [
 
 const searchInput=document.getElementById("searchInput"),clearBtn=document.getElementById("clearBtn"),routeList=document.getElementById("routeList"),resultCount=document.getElementById("resultCount"),tabs=document.querySelectorAll(".tab"),quickNumsContainer=document.getElementById("quickNums"),darkToggle=document.getElementById("darkToggle");
 const btnModeSearch=document.getElementById("btnModeSearch"),btnModeMap=document.getElementById("btnModeMap"),searchControls=document.getElementById("searchControls"),viewSearch=document.getElementById("viewSearch"),viewMap=document.getElementById("viewMap");
-let currentGroup="ALL",selectedQuickNum=null;
+let currentGroup="ALL",selectedQuickNum=null,mapInitialized=false,leafletMap=null,tileLayer=null,activeMapGroup="ALL",selectedSegmentId=null;
+
+// 주요 정류장 좌표 (순천시 실제 위치)
+const PTS = {
+  jeil: [34.9748, 127.4842, "제일고 (기점)"],
+  gagok: [34.9685, 127.4848, "가곡삼거리"],
+  gangbyeon: [34.9472, 127.4988, "강변고가교"],
+  cheongam: [34.9338, 127.4982, "청암대(박람회 서문측)"],
+  yeondong: [34.9225, 127.4795, "연동삼거리 (핵심 분기점)"],
+  hyocheon: [34.9135, 127.4745, "효천고"],
+  sangrim: [34.8645, 127.4425, "상림사거리 (80번대 분기)"],
+  jinmok: [34.8420, 127.4320, "진목 (82번 회차)"],
+  geocha: [34.8285, 127.4580, "거차 (85번 회차)"],
+  daedong84: [34.8450, 127.4020, "대동 (84번 회차)"],
+  bangok: [34.8350, 127.4180, "반곡 (86번 회차)"],
+  nagan: [34.9072, 127.3405, "낙안읍성 주차장 (61번 회차)"],
+  chogok: [34.8920, 127.4150, "초곡마을 (62번 회차)"],
+  sangsa: [34.9285, 127.4410, "상사면사무소·응령 (64번)"],
+  inan: [34.9025, 127.4620, "인안초등학교 (66번 회차)"],
+  seonpyeong: [34.9772, 127.5085, "선평삼거리 (동부·북부 분기)"],
+  hakgu: [35.0125, 127.4720, "학구삼거리"],
+  seopyeong: [34.9965, 127.4125, "서평교차로/승주 (60·63 분기)"],
+  seodong: [35.0250, 127.3880, "쌍암·서동마을 (60번 회차)"],
+  songgwang: [35.0020, 127.2750, "송광사·외장 (63번 회차)"],
+  sangbi: [34.9565, 127.5425, "상비교차로(성가롤로)"],
+  sindae: [34.9385, 127.5515, "신대교차로 (90·20번대 분기)"],
+  sandan: [34.9225, 127.5620, "산단교차로"],
+  waeseong: [34.9065, 127.5855, "현대제철·왜성 (25번 회차)"],
+  doseong: [34.8325, 127.6120, "해룡·여수공항·도성리 (96번)"],
+  yulchon_ic: [34.8725, 127.5540, "남해고속도로·율촌교차로"],
+  chungman: [34.8555, 127.5685, "충만한교회 (95·97 분기점)"],
+  hasa: [34.8385, 127.5750, "하사 (97번 직진 회차)"],
+  bongjeon: [34.8420, 127.5320, "상봉삼거리·봉전마을 (95번)"],
+  wangji: [34.9615, 127.5210, "왕지IC·NC백화점·대동 (56번)"],
+  bonghwa: [34.9580, 127.5050, "원용당·봉화터널·조례대림 (59번)"],
+  gwangyang: [34.9685, 127.6125, "덕례·광양터미널 (77·777번)"]
+};
+
+// 색상별 도로 경로 구간 정의 (공통 초록 줄기 + 분기 노선별 파스텔/고대비 색상)
+const mapSegments = [
+  // 90·20번대 축
+  { id: "m90_trunk", mgroup: "90·20번대", label: "공통줄기 (제일고→신대)", color: "#12b886", weight: 7, pts: ["jeil", "seonpyeong", "sangbi", "sindae"] },
+  { id: "m25", mgroup: "90·20번대", label: "25번 (산단·왜성)", color: "#ff922b", weight: 5, pts: ["sindae", "sandan", "waeseong"] },
+  { id: "m96", mgroup: "90·20번대", label: "96번 (해룡·여수공항·도성리)", color: "#845ef7", weight: 5, pts: ["sindae", "sandan", "doseong"] },
+  { id: "m9597_trunk", mgroup: "90·20번대", label: "95·97 공통 (율촌터널→충만한교회)", color: "#0ca678", weight: 6, pts: ["sindae", "yulchon_ic", "chungman"] },
+  { id: "m97", mgroup: "90·20번대", label: "97번 (직진·하사)", color: "#f06595", weight: 5, pts: ["chungman", "hasa"] },
+  { id: "m95", mgroup: "90·20번대", label: "95번 (상봉·봉전)", color: "#c08552", weight: 5, pts: ["chungman", "bongjeon"] },
+
+  // 60·80번대 연동축
+  { id: "m6080_trunk", mgroup: "연동축", label: "공통줄기 (제일고→청암대→연동)", color: "#12b886", weight: 7, pts: ["jeil", "gagok", "gangbyeon", "cheongam", "yeondong"] },
+  { id: "m64", mgroup: "연동축", label: "64번 (상사·응령)", color: "#339af0", weight: 5, pts: ["cheongam", "sangsa"] },
+  { id: "m61", mgroup: "연동축", label: "61번 (낙안읍성)", color: "#f06595", weight: 5, pts: ["yeondong", "nagan"] },
+  { id: "m62", mgroup: "연동축", label: "62번 (초곡마을)", color: "#c08552", weight: 5, pts: ["yeondong", "chogok"] },
+  { id: "m80_trunk", mgroup: "연동축", label: "80번대 공통 (연동→효천고→상림)", color: "#0ca678", weight: 6, pts: ["yeondong", "hyocheon", "sangrim"] },
+  { id: "m66", mgroup: "연동축", label: "66번 (인안초)", color: "#845ef7", weight: 5, pts: ["hyocheon", "inan"] },
+  { id: "m82", mgroup: "연동축", label: "82번 (진목)", color: "#ff922b", weight: 5, pts: ["sangrim", "jinmok"] },
+  { id: "m85", mgroup: "연동축", label: "85번 (거차)", color: "#e64980", weight: 5, pts: ["sangrim", "jinmok", "geocha"] },
+  { id: "m84", mgroup: "연동축", label: "84번 (송산·대동)", color: "#5c7cfa", weight: 5, pts: ["sangrim", "daedong84"] },
+  { id: "m86", mgroup: "연동축", label: "86번 (별량·반곡)", color: "#20c997", weight: 5, pts: ["sangrim", "bangok"] },
+
+  // 승주·송광사 축
+  { id: "m6063_trunk", mgroup: "승주축", label: "60·63 공통 (제일고→학구→서평)", color: "#12b886", weight: 7, pts: ["jeil", "seonpyeong", "hakgu", "seopyeong"] },
+  { id: "m60", mgroup: "승주축", label: "60번 (쌍암·서동)", color: "#f06595", weight: 5, pts: ["seopyeong", "seodong"] },
+  { id: "m63", mgroup: "승주축", label: "63번 (송광사·외장)", color: "#c08552", weight: 5, pts: ["seopyeong", "songgwang"] },
+
+  // 시내·광양 축
+  { id: "m77", mgroup: "시내광양", label: "77·777번 (광양터미널)", color: "#339af0", weight: 6, pts: ["jeil", "seonpyeong", "sangbi", "gwangyang"] },
+  { id: "m56", mgroup: "시내광양", label: "56번 (왕지·NC·대동)", color: "#ff922b", weight: 5, pts: ["jeil", "seonpyeong", "wangji"] },
+  { id: "m59", mgroup: "시내광양", label: "59번 (봉화터널·조례대림)", color: "#845ef7", weight: 5, pts: ["jeil", "bonghwa"] }
+];
+
+let renderedLayers = [];
+const routeCache = {};
+
+function updateTileTheme() {
+  if (!leafletMap) return;
+  if (tileLayer) leafletMap.removeLayer(tileLayer);
+  const isDark = document.body.classList.contains("dark");
+  const url = isDark
+    ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+    : "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png";
+  tileLayer = L.tileLayer(url, {
+    attribution: '&copy; OpenStreetMap &copy; CARTO',
+    maxZoom: 18
+  }).addTo(leafletMap);
+}
+
+async function fetchRoadGeometry(seg) {
+  if (routeCache[seg.id]) return routeCache[seg.id];
+  const coordsStr = seg.pts.map(k => `${PTS[k][1]},${PTS[k][0]}`).join(";");
+  try {
+    const res = await fetch(`https://router.project-osrm.org/route/v1/driving/${coordsStr}?overview=full&geometries=geojson`);
+    const data = await res.json();
+    if (data.routes && data.routes[0]) {
+      const latlngs = data.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
+      routeCache[seg.id] = latlngs;
+      return latlngs;
+    }
+  } catch (e) {}
+  return seg.pts.map(k => [PTS[k][0], PTS[k][1]]);
+}
+
+async function drawMapLayers() {
+  if (!leafletMap) return;
+  renderedLayers.forEach(l => leafletMap.removeLayer(l));
+  renderedLayers = [];
+
+  const targetSegs = mapSegments.filter(s => activeMapGroup === "ALL" || s.mgroup === activeMapGroup);
+  
+  // 범례 칩 렌더링
+  const legendEl = document.getElementById("mapLegend");
+  legendEl.innerHTML = targetSegs.map(s => `
+    <span class="c-chip ${selectedSegmentId === s.id ? "selected" : ""}" data-seg="${s.id}">
+      <i class="c-line" style="background:${s.color}"></i>${s.label}
+    </span>
+  `).join("");
+
+  document.querySelectorAll(".c-chip").forEach(chip => {
+    chip.addEventListener("click", () => {
+      const id = chip.dataset.seg;
+      selectedSegmentId = selectedSegmentId === id ? null : id;
+      drawMapLayers();
+    });
+  });
+
+  const usedPts = new Set();
+  const bounds = [];
+
+  for (const seg of targetSegs) {
+    const isDimmed = selectedSegmentId && selectedSegmentId !== seg.id;
+    const latlngs = await fetchRoadGeometry(seg);
+    latlngs.forEach(ll => bounds.push(ll));
+    seg.pts.forEach(p => usedPts.add(p));
+
+    const poly = L.polyline(latlngs, {
+      color: seg.color,
+      weight: isDimmed ? 3 : seg.weight,
+      opacity: isDimmed ? 0.25 : 0.9
+    }).addTo(leafletMap);
+    poly.bindPopup(`<b>${seg.label}</b>`);
+    renderedLayers.push(poly);
+  }
+
+  // 주요 분기점 마커 찍기
+  usedPts.forEach(k => {
+    const [lat, lng, title] = PTS[k];
+    const isHub = title.includes("분기") || title.includes("기점");
+    const marker = L.circleMarker([lat, lng], {
+      radius: isHub ? 7 : 5,
+      fillColor: isHub ? "#ffd43b" : "#ffffff",
+      color: "#191f28",
+      weight: 2,
+      fillOpacity: 1
+    }).addTo(leafletMap);
+    marker.bindPopup(`<b>${title}</b>`);
+    renderedLayers.push(marker);
+  });
+
+  if (bounds.length > 0 && !selectedSegmentId) {
+    leafletMap.fitBounds(bounds, { padding: [25, 25] });
+  }
+}
+
+function initMap() {
+  if (mapInitialized) {
+    setTimeout(() => leafletMap.invalidateSize(), 100);
+    return;
+  }
+  leafletMap = L.map("map").setView([34.93, 127.49], 11);
+  updateTileTheme();
+  mapInitialized = true;
+  drawMapLayers();
+}
+
+document.querySelectorAll(".m-tab").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".m-tab").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    activeMapGroup = btn.dataset.mgroup;
+    selectedSegmentId = null;
+    drawMapLayers();
+  });
+});
 
 if(localStorage.getItem("bus_dark_mode")==="true"){document.body.classList.add("dark");darkToggle.textContent="☀️ 라이트"}
-darkToggle.addEventListener("click",()=>{const e=document.body.classList.toggle("dark");darkToggle.textContent=e?"☀️ 라이트":"🌙 다크모드",localStorage.setItem("bus_dark_mode",e)});
+darkToggle.addEventListener("click",()=>{
+  const e=document.body.classList.toggle("dark");
+  darkToggle.textContent=e?"☀️ 라이트":"🌙 다크모드";
+  localStorage.setItem("bus_dark_mode",e);
+  updateTileTheme();
+});
 
 btnModeSearch.addEventListener("click",()=>{
   btnModeSearch.classList.add("active");btnModeMap.classList.remove("active");
@@ -325,6 +371,7 @@ btnModeSearch.addEventListener("click",()=>{
 btnModeMap.addEventListener("click",()=>{
   btnModeMap.classList.add("active");btnModeSearch.classList.remove("active");
   searchControls.classList.add("hidden");viewSearch.classList.add("hidden");viewMap.classList.remove("hidden");
+  initMap();
 });
 
 function renderQuickButtons(){
