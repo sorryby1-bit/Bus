@@ -3,45 +3,37 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>순천 직통 노선 가이드</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<title>순천 버스 노선 가이드</title>
 <style>
 :root{
-  --bg-body:#f2f4f7;--bg-header:#fff;--bg-card:#fff;--bg-input:#f9fafb;--bg-stop:#f2f4f6;
-  --text-main:#191f28;--text-sub:#4e5968;--text-muted:#8b95a1;--border-color:#e5e8eb;
-  --primary:#3182f6;--primary-light:#e8f3ff;--primary-text:#1b64da;
-  --shadow:0 2px 8px rgba(0,0,0,.06);--card-shadow:0 1px 4px rgba(0,0,0,.04);
-  --origin-bg:#e6fcf5;--origin-text:#087f5b;--origin-border:#63e6be;
-  --end-bg:#e7f5ff;--end-text:#1864ab;--end-border:#4dabf7;
-  --imp-bg:#fff0f0;--imp-text:#c92a2a;--imp-border:#ffa8a8;
-}
-body.dark{
   --bg-body:#101318;--bg-header:#191d24;--bg-card:#1e232b;--bg-input:#262c36;--bg-stop:#2a303c;
   --text-main:#f2f4f6;--text-sub:#b0b8c1;--text-muted:#76808f;--border-color:#2f3642;
   --primary:#4593fc;--primary-light:#1e324d;--primary-text:#74b2ff;
-  --shadow:0 2px 10px rgba(0,0,0,.4);--card-shadow:0 2px 6px rgba(0,0,0,.25);
+  --shadow:0 2px 10px rgba(0,0,0,.45);--card-shadow:0 2px 6px rgba(0,0,0,.28);
   --origin-bg:#0c382c;--origin-text:#63e6be;--origin-border:#12b886;
   --end-bg:#133252;--end-text:#74c0fc;--end-border:#339af0;
   --imp-bg:#45181c;--imp-text:#ff8787;--imp-border:#fa5252;
+  --time-bg:#2b2615;--time-text:#ffd43b;--time-border:#fcc419;
+  --x-bg:#2c2f36;--x-text:#adb5bd;--x-border:#495057;
 }
 *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif}
-body{background-color:var(--bg-body);color:var(--text-main);padding-bottom:30px;transition:background-color .2s,color .2s}
-.header{position:sticky;top:0;background:var(--bg-header);padding:12px 16px 10px;box-shadow:var(--shadow);z-index:1000;border-bottom:1px solid var(--border-color)}
+body{background-color:var(--bg-body);color:var(--text-main);padding-bottom:44px}
+.header{position:sticky;top:0;background:var(--bg-header);padding:12px 16px 10px;box-shadow:var(--shadow);z-index:100;border-bottom:1px solid var(--border-color)}
 .header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.header h1{font-size:18px;font-weight:800;color:var(--text-main)}
-.dark-toggle{background:var(--bg-stop);color:var(--text-main);border:1px solid var(--border-color);padding:6px 12px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer}
+.header h1{font-size:18px;font-weight:900;color:var(--text-main);letter-spacing:-.3px}
+.sub-badge{font-size:11.5px;background:var(--primary-light);color:var(--primary-text);padding:4px 9px;border-radius:12px;font-weight:800}
 
-.mode-switch{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--bg-stop);padding:4px;border-radius:12px;margin-bottom:8px}
-.mode-btn{padding:8px 0;border:none;border-radius:9px;background:transparent;color:var(--text-sub);font-size:14px;font-weight:800;cursor:pointer;transition:.15s}
-.mode-btn.active{background:var(--bg-card);color:var(--primary);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+/* 2단 메인 메뉴 */
+.main-menu{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--bg-stop);padding:4px;border-radius:12px;margin-bottom:10px}
+.menu-btn{padding:9px 0;border:none;border-radius:9px;background:transparent;color:var(--text-sub);font-size:14.5px;font-weight:800;cursor:pointer;transition:.15s}
+.menu-btn.active{background:var(--bg-card);color:var(--primary);box-shadow:0 1px 4px rgba(0,0,0,.35)}
 
 .search-box{position:relative;display:flex;align-items:center}
 .search-box input{width:100%;padding:10px 38px 10px 14px;font-size:16px;border:2px solid var(--primary);border-radius:12px;outline:none;background:var(--bg-input);color:var(--text-main)}
-.search-box input::placeholder{color:var(--text-muted)}
-.clear-btn{position:absolute;right:10px;background:var(--text-muted);color:var(--bg-header);border:none;border-radius:50%;width:22px;height:22px;font-size:13px;font-weight:700;cursor:pointer;display:none;align-items:center;justify-content:center}
+.search-box input::placeholder{color:var(--text-muted);font-size:14.5px}
+.clear-btn{position:absolute;right:10px;background:var(--text-muted);color:var(--bg-header);border:none;border-radius:50%;width:22px;height:22px;font-size:13px;font-weight:800;cursor:pointer;display:none;align-items:center;justify-content:center}
 
-.tabs{display:flex;gap:6px;overflow-x:auto;padding-top:8px;scrollbar-width:none}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-top:9px;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
 .tab{padding:6px 12px;border-radius:20px;border:1px solid var(--border-color);background:var(--bg-card);font-size:13px;font-weight:700;color:var(--text-sub);white-space:nowrap;cursor:pointer}
 .tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
@@ -49,23 +41,41 @@ body{background-color:var(--bg-body);color:var(--text-main);padding-bottom:30px;
 .quick-nums{display:flex;gap:6px;overflow-x:auto;padding-top:8px;margin-top:8px;border-top:1px dashed var(--border-color);scrollbar-width:none}
 .quick-nums::-webkit-scrollbar{display:none}
 .q-btn{padding:5px 11px;border-radius:8px;border:1px solid var(--border-color);background:var(--bg-stop);color:var(--text-main);font-size:14px;font-weight:800;white-space:nowrap;cursor:pointer}
-.q-btn.active{background:#ff922b;color:#fff;border-color:#ff922b}
+.q-btn.active{background:#ff922b;color:#111;border-color:#ff922b}
+.q-btn.is-x{color:var(--text-muted);border-style:dashed}
 
-.container{padding:14px 16px;max-width:680px;margin:0 auto}
+.container{padding:14px 16px;max-width:640px;margin:0 auto}
 .legend{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--text-sub);margin-bottom:10px;align-items:center}
 .legend-item{display:flex;align-items:center;gap:4px;font-weight:600}
 .dot{width:10px;height:10px;border-radius:3px;display:inline-block}
 .dot.origin{background:var(--origin-border)}
 .dot.end{background:var(--end-border)}
 .dot.imp{background:var(--imp-border)}
+.dot.time{background:var(--time-border)}
+
+.filter-banner{display:flex;justify-content:space-between;align-items:center;background:var(--primary-light);border:1px solid var(--primary);color:var(--primary-text);padding:8px 12px;border-radius:10px;margin-bottom:10px;font-size:13px;font-weight:800}
+.filter-banner button{background:var(--primary);color:#fff;border:none;padding:3px 9px;border-radius:6px;font-size:12px;font-weight:800;cursor:pointer}
+
 .count{font-size:13px;color:var(--text-muted);margin-bottom:10px;font-weight:600}
 
-.card{background:var(--bg-card);border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:var(--card-shadow);border:1px solid var(--border-color)}
-.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.card{background:var(--bg-card);border-radius:14px;padding:15px;margin-bottom:12px;box-shadow:var(--card-shadow);border:1px solid var(--border-color)}
+.card.card-x{opacity:.82}
+.card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px}
+.title-left{display:flex;flex-direction:column;gap:3px}
+.num-row{display:flex;align-items:center;gap:8px}
 .bus-num{font-size:22px;font-weight:900;color:var(--primary);letter-spacing:-.5px}
-.group-badge{font-size:12px;background:var(--primary-light);color:var(--primary-text);padding:4px 8px;border-radius:6px;font-weight:700}
-.route-flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:14.5px;line-height:1.5;color:var(--text-main)}
-.stop{background:var(--bg-stop);padding:5px 9px;border-radius:7px;font-weight:500;border:1px solid transparent}
+.dest-title{font-size:14px;font-weight:800;color:var(--text-main)}
+.group-badge{font-size:11.5px;background:var(--bg-stop);color:var(--text-sub);padding:4px 8px;border-radius:6px;font-weight:700;white-space:nowrap}
+
+/* 직통시간 & 소요시간 뱃지 */
+.time-bar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:11px}
+.time-chip{font-size:12.5px;font-weight:800;padding:4px 9px;border-radius:7px;background:var(--time-bg);color:var(--time-text);border:1px solid var(--time-border)}
+.time-chip.dur{background:var(--bg-stop);color:var(--text-main);border:1px solid var(--border-color)}
+.time-chip.no-direct{background:var(--x-bg);color:var(--x-text);border:1px solid var(--x-border)}
+
+.route-flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:14px;line-height:1.5;color:var(--text-main)}
+.stop{background:var(--bg-stop);padding:5px 9px;border-radius:7px;font-weight:600;border:1px solid transparent;cursor:pointer;transition:transform .1s}
+.stop:active{transform:scale(.96)}
 .stop.origin{background:var(--origin-bg);color:var(--origin-text);border:1.5px solid var(--origin-border);font-weight:800}
 .stop.end{background:var(--end-bg);color:var(--end-text);border:1.5px solid var(--end-border);font-weight:800}
 .stop.important{background:var(--imp-bg);color:var(--imp-text);border:1.5px solid var(--imp-border);font-weight:800}
@@ -74,25 +84,13 @@ body{background-color:var(--bg-body);color:var(--text-main);padding-bottom:30px;
 .end .badge-tag{background:var(--end-border);color:#000}
 .stop.highlight{background:#ffd43b!important;font-weight:900!important;color:#111!important;border:1.5px solid #f59f00!important}
 .arrow{color:var(--text-muted);font-size:11px;font-weight:700}
-.note{margin-top:12px;padding:9px 11px;background:var(--imp-bg);color:var(--imp-text);border:1px solid var(--imp-border);border-radius:8px;font-size:13.5px;font-weight:700}
 
-/* 실제 지도 화면 스타일 */
-.map-wrap{padding:10px 14px;max-width:800px;margin:0 auto}
-.map-filters{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none}
-.map-filters::-webkit-scrollbar{display:none}
-.m-tab{padding:6px 12px;border-radius:20px;border:1px solid var(--border-color);background:var(--bg-card);font-size:12.5px;font-weight:800;color:var(--text-sub);white-space:nowrap;cursor:pointer}
-.m-tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.note{margin-top:11px;padding:8px 11px;background:var(--imp-bg);color:var(--imp-text);border:1px solid var(--imp-border);border-radius:8px;font-size:13px;font-weight:700;line-height:1.45}
 
-.color-legend{display:flex;flex-wrap:wrap;gap:6px;background:var(--bg-card);padding:9px 11px;border-radius:12px;border:1px solid var(--border-color);margin-bottom:10px;font-size:12px;font-weight:700}
-.c-chip{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:6px;background:var(--bg-stop);cursor:pointer;border:1.5px solid transparent}
-.c-chip.selected{border-color:var(--text-main);transform:scale(1.03)}
-.c-line{width:14px;height:5px;border-radius:3px;display:inline-block}
-
-#map{width:100%;height:62vh;min-height:420px;border-radius:16px;border:1.5px solid var(--border-color);box-shadow:var(--card-shadow);z-index:1;background:#e9ecef}
-body.dark #map{background:#191d24}
-/* 다크모드 시 배경 지도 타일만 눈이 편한 다크 톤으로 변환 (노선 색상은 그대로 유지) */
-body.dark .leaflet-tile-pane{filter:invert(100%) hue-rotate(180deg) brightness(88%) contrast(92%) saturate(75%)}
-.map-status{font-size:11.5px;color:var(--text-muted);margin-top:6px;text-align:right;font-weight:600}
+/* 2. 버스노선 준비 화면 */
+.empty-box{background:var(--bg-card);border:1.5px dashed var(--border-color);border-radius:16px;padding:36px 20px;text-align:center;margin-top:10px}
+.empty-box h2{font-size:17px;font-weight:800;margin-bottom:8px;color:var(--text-main)}
+.empty-box p{font-size:13.5px;color:var(--text-sub);line-height:1.6}
 .hidden{display:none!important}
 </style>
 </head>
@@ -100,308 +98,491 @@ body.dark .leaflet-tile-pane{filter:invert(100%) hue-rotate(180deg) brightness(8
 
 <div class="header">
   <div class="header-top">
-    <h1>🚌 순천 직통 노선 가이드</h1>
-    <button class="dark-toggle" id="darkToggle">🌙 다크모드</button>
+    <h1>🚌 순천 버스 노선 가이드</h1>
+    <span class="sub-badge">순천교통 기준</span>
   </div>
   
-  <div class="mode-switch">
-    <button class="mode-btn active" id="btnModeSearch">🔍 노선 검색</button>
-    <button class="mode-btn" id="btnModeMap">🗺️ 실제 노선 지도</button>
+  <div class="main-menu">
+    <button class="menu-btn active" id="btnMenuDirect">1. 직통</button>
+    <button class="menu-btn" id="btnMenuNormal">2. 버스노선</button>
   </div>
 
-  <div id="searchControls">
+  <div id="directControls">
     <div class="search-box">
-      <input type="text" id="searchInput" placeholder="경유지(예: 선평, 율촌) 또는 번호 검색" autocomplete="off" />
+      <input type="text" id="searchInput" placeholder="번호, 방면, 경유지, 초성(예: ㅅㅍ, ㅇㅊ) 검색" autocomplete="off" />
       <button class="clear-btn" id="clearBtn">✕</button>
     </div>
     <div class="tabs" id="tabContainer">
       <button class="tab active" data-group="ALL">전체</button>
-      <button class="tab" data-group="60번대">60번대</button>
-      <button class="tab" data-group="80번대">80번대</button>
-      <button class="tab" data-group="90·20번대">90·20번대</button>
+      <button class="tab" data-group="20번대">20번대</button>
       <button class="tab" data-group="50번대">50번대</button>
+      <button class="tab" data-group="60번대">60번대</button>
       <button class="tab" data-group="70번대">70번대</button>
+      <button class="tab" data-group="80번대">80번대</button>
+      <button class="tab" data-group="90번대">90번대</button>
+      <button class="tab" data-group="100번대">100번대</button>
     </div>
     <div class="quick-nums" id="quickNums"></div>
   </div>
 </div>
 
-<!-- 1. 노선 검색 화면 -->
-<div class="container" id="viewSearch">
+<!-- 1. 직통 화면 -->
+<div class="container" id="viewDirect">
   <div class="legend">
-    <span class="legend-item"><i class="dot origin"></i>기점(출발)</span>
-    <span class="legend-item"><i class="dot end"></i>회차지(종점)</span>
-    <span class="legend-item"><i class="dot imp"></i>주의·분기 구간</span>
+    <span class="legend-item"><i class="dot time"></i>직통시간</span>
+    <span class="legend-item"><i class="dot origin"></i>기점</span>
+    <span class="legend-item"><i class="dot end"></i>직통발</span>
+    <span class="legend-item"><i class="dot imp"></i>주의·분기</span>
+  </div>
+  <div id="stopFilterBanner" class="filter-banner hidden">
+    <span id="stopFilterText">정류장 필터 적용됨</span>
+    <button id="clearStopFilter">해제 ✕</button>
   </div>
   <div class="count" id="resultCount">총 0개 노선</div>
   <div id="routeList"></div>
 </div>
 
-<!-- 2. 실제 도로 기반 색상 분기 지도 -->
-<div class="map-wrap hidden" id="viewMap">
-  <div class="map-filters" id="mapFilters">
-    <button class="m-tab active" data-mgroup="ALL">전체 노선망</button>
-    <button class="m-tab" data-mgroup="90·20번대">90·20번대 (율촌·해룡)</button>
-    <button class="m-tab" data-mgroup="연동축">60·80번대 (청암·연동·별량)</button>
-    <button class="m-tab" data-mgroup="승주축">60번대 (승주·송광사)</button>
-    <button class="m-tab" data-mgroup="시내광양">50·70번대 (시내·광양)</button>
+<!-- 2. 버스노선 화면 (추후 일반 노선 데이터 추가 공간) -->
+<div class="container hidden" id="viewNormal">
+  <div class="empty-box">
+    <h2>📋 일반 버스노선 정리 공간</h2>
+    <p>추후 정리해 주실 순천시 일반 버스노선 데이터가<br/>이 탭에 깔끔하게 추가될 예정입니다.</p>
   </div>
-  <div class="color-legend" id="mapLegend"></div>
-  <div id="map"></div>
-  <div class="map-status" id="mapStatus">색상 버튼을 누르면 해당 노선만 진하게 강조됩니다.</div>
 </div>
 
 <script>
-const routes = [
-  { num: "60", group: "60번대", stops: [{ name: "제일고" }, { name: "선평삼거리" }, { name: "학구삼거리" }, { name: "서평교차로(승주읍사거리)" }, { name: "쌍암기사식당" }, { name: "서동마을" }] },
-  { num: "61", group: "60번대", stops: [{ name: "제일고" }, { name: "가곡삼거리" }, { name: "강변고가교(로터리까지)" }, { name: "청암대(박람회 서문측으로)" }, { name: "연동삼거리" }, { name: "낙안읍성(주차장)" }] },
-  { num: "62", group: "60번대", stops: [{ name: "제일고" }, { name: "가곡삼거리" }, { name: "강변고가교(로터리까지)" }, { name: "청암대(박람회 서문측으로)" }, { name: "연동삼거리" }, { name: "초곡마을입구" }, { name: "초곡마을" }] },
-  { num: "63", group: "60번대", stops: [{ name: "제일고" }, { name: "선평삼거리" }, { name: "학구삼거리" }, { name: "서평교차로(승주읍사거리)" }, { name: "문길삼거리(세븐일레븐)" }, { name: "송광사삼거리(송광사)" }, { name: "곡천삼거리(곡천터미널)" }, { name: "외장(외우산비석)" }] },
-  { num: "64", group: "60번대", stops: [{ name: "제일고" }, { name: "가곡삼거리" }, { name: "강변고가교(로터리까지)" }, { name: "청암대(박람회 서문측으로)" }, { name: "상사면사무소" }, { name: "상사초등학교" }, { name: "응령마을" }] },
-  { num: "66", group: "60번대", stops: [{ name: "제일고" }, { name: "가곡삼거리" }, { name: "강변고가교(로터리까지)" }, { name: "청암대(박람회 서문측으로)" }, { name: "연동삼거리" }, { name: "효천고등학교" }, { name: "인월사거리" }, { name: "인안초등학교" }] },
-  { num: "82", group: "80번대", stops: [{ name: "제일고" }, { name: "가곡삼거리" }, { name: "강변고가교(로터리까지)" }, { name: "청암대(박람회 서문측으로)" }, { name: "연동삼거리" }, { name: "효천고" }, { name: "상림사거리" }, { name: "진목입구" }, { name: "진목" }] },
-  { num: "84", group: "80번대", stops: [{ name: "제일고" }, { name: "가곡삼거리" }, { name: "강변고가교(로터리까지)" }, { name: "청암대(박람회 서문측으로)" }, { name: "연동삼거리" }, { name: "효천고" }, { name: "상림사거리" }, { name: "사계절삼거리(사계절오일뱅크)" }, { name: "구룡교방면" }, { name: "송산초등학교 방면" }, { name: "대동마을 방면" }, { name: "대동" }] },
-  { num: "85", group: "80번대", stops: [{ name: "제일고" }, { name: "가곡삼거리" }, { name: "강변고가교(로터리까지)" }, { name: "청암대(박람회 서문측으로)" }, { name: "연동삼거리" }, { name: "효천고" }, { name: "상림사거리" }, { name: "진목입구" }, { name: "죽림삼거리" }, { name: "거차" }] },
-  { num: "86", group: "80번대", stops: [{ name: "제일고" }, { name: "가곡삼거리" }, { name: "강변고가교(로터리까지)" }, { name: "청암대(박람회 서문측으로)" }, { name: "연동삼거리" }, { name: "효천고" }, { name: "상림사거리" }, { name: "별량면사무소 방면" }, { name: "별량면 고가다리밑" }, { name: "반곡" }] },
-  { num: "95", group: "90·20번대", stops: [{ name: "제일고" }, { name: "선평삼거리" }, { name: "상비교차로(성가롤로)" }, { name: "신대교차로" }, { name: "남해고속도로(시점) 여수 율촌 방면", important: true }, { name: "율촌터널" }, { name: "여수공항, 율촌 방면(율촌교차로)", important: true }, { name: "충만한교회(여수시청, 상봉 방면)", important: true }, { name: "상봉삼거리(소망재가복지센터)" }, { name: "광암마을회관(다리쪽)" }, { name: "봉전마을회관" }] },
-  { num: "96", group: "90·20번대", stops: [{ name: "제일고" }, { name: "선평삼거리" }, { name: "상비교차로(성가롤로)" }, { name: "신대교차로" }, { name: "산단교차로" }, { name: "해룡육교" }, { name: "호두삼거리" }, { name: "신풍삼거리(여수공항)" }, { name: "애양병원" }, { name: "도성리마을회관" }], note: "※ 여수 버스 출차 후 진입" },
-  { num: "97", group: "90·20번대", stops: [{ name: "제일고" }, { name: "선평삼거리" }, { name: "상비교차로(성가롤로)" }, { name: "신대교차로" }, { name: "남해고속도로(시점) 여수 율촌 방면", important: true }, { name: "율촌터널" }, { name: "여수공항, 율촌 방면(율촌교차로)", important: true }, { name: "충만한교회(순천, 해룡 방면)", important: true }, { name: "하사" }] },
-  { num: "25", group: "90·20번대", stops: [{ name: "제일고" }, { name: "선평삼거리" }, { name: "상비교차로(성가롤로)" }, { name: "신대교차로" }, { name: "산단교차로 [좌]" }, { name: "현대제철(신성교) [좌]" }, { name: "왜성(정류장) [우]" }] },
-  { num: "56", group: "50번대", stops: [{ name: "제일고" }, { name: "선평삼거리" }, { name: "왕지IC 램프F교" }, { name: "NC백화점 사거리 [좌]" }, { name: "범암교(왕운세차장) [좌]" }, { name: "대동(왕조가든)" }] },
-  { num: "59", group: "50번대", stops: [{ name: "제일고" }, { name: "용당 삼산로 방면 [좌](원용당교)" }, { name: "용당 신흥길 방면" }, { name: "봉화터널" }, { name: "한듬정육점 측 [좌]" }, { name: "봉화그린빌" }, { name: "조례대림A 방면" }] },
-  { num: "77", group: "70번대", stops: [{ name: "제일고" }, { name: "선평삼거리" }, { name: "상비교차로(성가롤로)" }, { name: "덕례사거리" }, { name: "터미널교차로" }, { name: "광양터미널(도립미술관)" }] },
-  { num: "777", group: "70번대", stops: [{ name: "제일고" }, { name: "선평삼거리" }, { name: "상비교차로(성가롤로)" }, { name: "덕례사거리" }, { name: "터미널교차로" }, { name: "광양터미널(도립미술관)" }] }
+// 1. 직통 노선 데이터 (순천교통 종점발 직통시간 표 + 상세 경유지 통합)
+const directRoutes = [
+  {
+    num: "23", group: "20번대", dest: "광양세풍",
+    directTime: "X", duration: "-", note: "",
+    stops: [{ name: "광양세풍" }]
+  },
+  {
+    num: "25", group: "20번대", dest: "해룡용전(직:신성포)",
+    directTime: "6:25", duration: "30분", note: "비고: 신성포>용전>제일고",
+    stops: [
+      { name: "제일고" }, { name: "선평삼거리" }, { name: "상비교차로(성가롤로)" },
+      { name: "신대교차로" }, { name: "산단교차로 [좌]" }, { name: "현대제철(신성교) [좌]" },
+      { name: "왜성(정류장) [우]" }
+    ]
+  },
+  {
+    num: "52", group: "50번대", dest: "청암대",
+    directTime: "6:05", duration: "25분", note: "",
+    stops: [{ name: "제일고" }, { name: "청암대" }]
+  },
+  {
+    num: "56", group: "50번대", dest: "법원,검찰청/왕조대동",
+    directTime: "6:00", duration: "20분", note: "",
+    stops: [
+      { name: "제일고" }, { name: "선평삼거리" }, { name: "왕지IC 램프F교" },
+      { name: "NC백화점 사거리 [좌]" }, { name: "범암교(왕운세차장) [좌]" }, { name: "대동(왕조가든)" }
+    ]
+  },
+  {
+    num: "59", group: "50번대", dest: "조례대림A(순천경찰서방향)",
+    directTime: "6:00", duration: "15분", note: "",
+    stops: [
+      { name: "제일고" }, { name: "용당 삼산로 방면 [좌](원용당교)" }, { name: "용당 신흥길 방면" },
+      { name: "봉화터널" }, { name: "한듬정육점 측 [좌]" }, { name: "봉화그린빌" }, { name: "조례대림A 방면" }
+    ]
+  },
+  {
+    num: "59-1", group: "50번대", dest: "조례대림A(용당이편한A방향)",
+    directTime: "6:15", duration: "15분", note: "",
+    stops: [{ name: "제일고" }, { name: "용당이편한A방향" }, { name: "조례대림A" }]
+  },
+  {
+    num: "60", group: "60번대", dest: "승주서동",
+    directTime: "6:40", duration: "25분", note: "",
+    stops: [
+      { name: "제일고" }, { name: "선평삼거리" }, { name: "학구삼거리" },
+      { name: "서평교차로(승주읍사거리)" }, { name: "쌍암기사식당" }, { name: "서동마을" }
+    ]
+  },
+  {
+    num: "61", group: "60번대", dest: "낙안읍성(흥림,평사경유)",
+    directTime: "6:50", duration: "45분", note: "비고: 옥산(신규),평사마을,흥림경유",
+    stops: [
+      { name: "제일고" }, { name: "가곡삼거리" }, { name: "강변고가교(로터리까지)" },
+      { name: "청암대(박람회 서문측으로)" }, { name: "연동삼거리" }, { name: "낙안읍성(주차장)" }
+    ]
+  },
+  {
+    num: "62", group: "60번대", dest: "상사기동(초곡,운곡,면사무소경유)",
+    directTime: "6:10", duration: "35분", note: "비고: 초곡마을 출발",
+    stops: [
+      { name: "제일고" }, { name: "가곡삼거리" }, { name: "강변고가교(로터리까지)" },
+      { name: "청암대(박람회 서문측으로)" }, { name: "연동삼거리" }, { name: "초곡마을입구" }, { name: "초곡마을" }
+    ]
+  },
+  {
+    num: "63", group: "60번대", dest: "고인돌외장(송광사경유)",
+    directTime: "6:40", duration: "50분", note: "비고: 곡천,송광사X",
+    stops: [
+      { name: "제일고" }, { name: "선평삼거리" }, { name: "학구삼거리" },
+      { name: "서평교차로(승주읍사거리)" }, { name: "문길삼거리(세븐일레븐)" },
+      { name: "송광사삼거리(송광사)" }, { name: "곡천삼거리(곡천터미널)" }, { name: "외장(외우산비석)" }
+    ]
+  },
+  {
+    num: "64", group: "60번대", dest: "상사응령",
+    directTime: "6:10", duration: "35분", note: "",
+    stops: [
+      { name: "제일고" }, { name: "가곡삼거리" }, { name: "강변고가교(로터리까지)" },
+      { name: "청암대(박람회 서문측으로)" }, { name: "상사면사무소" }, { name: "상사초등학교" }, { name: "응령마을" }
+    ]
+  },
+  {
+    num: "66", group: "60번대", dest: "인안초",
+    directTime: "6:10", duration: "30분", note: "",
+    stops: [
+      { name: "제일고" }, { name: "가곡삼거리" }, { name: "강변고가교(로터리까지)" },
+      { name: "청암대(박람회 서문측으로)" }, { name: "연동삼거리" }, { name: "효천고등학교" },
+      { name: "인월사거리" }, { name: "인안초등학교" }
+    ]
+  },
+  {
+    num: "71", group: "70번대", dest: "드라마촬영장(팔마중,동신A방향)",
+    directTime: "6:10", duration: "20분", note: "",
+    stops: [{ name: "제일고" }, { name: "팔마중,동신A방향" }, { name: "드라마촬영장" }]
+  },
+  {
+    num: "71-1", group: "70번대", dest: "드라마촬영장(폴리텍대학방향)",
+    directTime: "6:30", duration: "20분", note: "",
+    stops: [{ name: "제일고" }, { name: "폴리텍대학방향" }, { name: "드라마촬영장" }]
+  },
+  {
+    num: "77", group: "70번대", dest: "광양터미널",
+    directTime: "6:00", duration: "25분", note: "",
+    stops: [
+      { name: "제일고" }, { name: "선평삼거리" }, { name: "상비교차로(성가롤로)" },
+      { name: "덕례사거리" }, { name: "터미널교차로" }, { name: "광양터미널(도립미술관)" }
+    ]
+  },
+  {
+    num: "777", group: "70번대", dest: "청암대-광양터미널",
+    directTime: "6:20", duration: "25분", note: "",
+    stops: [
+      { name: "제일고" }, { name: "선평삼거리" }, { name: "상비교차로(성가롤로)" },
+      { name: "덕례사거리" }, { name: "터미널교차로" }, { name: "광양터미널(도립미술관)" }
+    ]
+  },
+  {
+    num: "81", group: "80번대", dest: "별량화포(상림좌 시계방향)",
+    directTime: "X", duration: "-", note: "",
+    stops: [{ name: "별량화포(상림좌 시계방향)" }]
+  },
+  {
+    num: "82", group: "80번대", dest: "별량화포(상림우 반시계방향)",
+    directTime: "6:00", duration: "30분", note: "비고: 진목 출발",
+    stops: [
+      { name: "제일고" }, { name: "가곡삼거리" }, { name: "강변고가교(로터리까지)" },
+      { name: "청암대(박람회 서문측으로)" }, { name: "연동삼거리" }, { name: "효천고" },
+      { name: "상림사거리" }, { name: "진목입구" }, { name: "진목" }
+    ]
+  },
+  {
+    num: "84", group: "80번대", dest: "별량대동(죽림,대치,용두경유)",
+    directTime: "6:10", duration: "45분", note: "비고: 죽림,진치 경유",
+    stops: [
+      { name: "제일고" }, { name: "가곡삼거리" }, { name: "강변고가교(로터리까지)" },
+      { name: "청암대(박람회 서문측으로)" }, { name: "연동삼거리" }, { name: "효천고" },
+      { name: "상림사거리" }, { name: "사계절삼거리(사계절오일뱅크)" }, { name: "구룡교방면" },
+      { name: "송산초등학교 방면" }, { name: "대동마을 방면" }, { name: "대동" }
+    ]
+  },
+  {
+    num: "85", group: "80번대", dest: "별량마산, 거차(창산경유)",
+    directTime: "6:00", duration: "35분", note: "비고: 창산 경유",
+    stops: [
+      { name: "제일고" }, { name: "가곡삼거리" }, { name: "강변고가교(로터리까지)" },
+      { name: "청암대(박람회 서문측으로)" }, { name: "연동삼거리" }, { name: "효천고" },
+      { name: "상림사거리" }, { name: "진목입구" }, { name: "죽림삼거리" }, { name: "거차" }
+    ]
+  },
+  {
+    num: "86", group: "80번대", dest: "별량반곡(서동경유)",
+    directTime: "6:10", duration: "30분", note: "",
+    stops: [
+      { name: "제일고" }, { name: "가곡삼거리" }, { name: "강변고가교(로터리까지)" },
+      { name: "청암대(박람회 서문측으로)" }, { name: "연동삼거리" }, { name: "효천고" },
+      { name: "상림사거리" }, { name: "별량면사무소 방면" }, { name: "별량면 고가다리밑" }, { name: "반곡" }
+    ]
+  },
+  {
+    num: "94", group: "90번대", dest: "여수사곡(율촌면사무소)",
+    directTime: "X", duration: "-", note: "",
+    stops: [{ name: "여수사곡(율촌면사무소)" }]
+  },
+  {
+    num: "95", group: "90번대", dest: "여수봉전(산수경유)",
+    directTime: "6:05", duration: "35분", note: "비고: 산수(신대마을회관) 경유",
+    stops: [
+      { name: "제일고" }, { name: "선평삼거리" }, { name: "상비교차로(성가롤로)" },
+      { name: "신대교차로" }, { name: "남해고속도로(시점) 여수 율촌 방면", important: true },
+      { name: "율촌터널" }, { name: "여수공항, 율촌 방면(율촌교차로)", important: true },
+      { name: "충만한교회(여수시청, 상봉 방면)", important: true },
+      { name: "상봉삼거리(소망재가복지센터)" }, { name: "광암마을회관(다리쪽)" }, { name: "봉전마을회관" }
+    ]
+  },
+  {
+    num: "96", group: "90번대", dest: "애양원(여수공항경유)",
+    directTime: "6:20", duration: "35분", note: "비고: 공항내 회차X / ※ 여수 버스 출차 후 진입",
+    stops: [
+      { name: "제일고" }, { name: "선평삼거리" }, { name: "상비교차로(성가롤로)" },
+      { name: "신대교차로" }, { name: "산단교차로" }, { name: "해룡육교" },
+      { name: "호두삼거리" }, { name: "신풍삼거리(여수공항)" }, { name: "애양병원" }, { name: "도성리마을회관" }
+    ]
+  },
+  {
+    num: "97", group: "90번대", dest: "해룡하사",
+    directTime: "6:00", duration: "25분", note: "비고: 와온 경유",
+    stops: [
+      { name: "제일고" }, { name: "선평삼거리" }, { name: "상비교차로(성가롤로)" },
+      { name: "신대교차로" }, { name: "남해고속도로(시점) 여수 율촌 방면", important: true },
+      { name: "율촌터널" }, { name: "여수공항, 율촌 방면(율촌교차로)", important: true },
+      { name: "충만한교회(순천, 해룡 방면)", important: true }, { name: "하사" }
+    ]
+  },
+  {
+    num: "98", group: "90번대", dest: "해룡와온",
+    directTime: "X", duration: "-", note: "",
+    stops: [{ name: "해룡와온" }]
+  },
+  {
+    num: "960", group: "90번대", dest: "여수시청(여수공항경유)",
+    directTime: "X", duration: "-", note: "",
+    stops: [{ name: "여수시청(여수공항경유)" }]
+  },
+  {
+    num: "100", group: "100번대", dest: "제일고순환(제일고좌 시계방향)",
+    directTime: "6:10", duration: "20분", note: "비고: 신원아르시스 출발",
+    stops: [{ name: "신원아르시스" }, { name: "제일고" }]
+  },
+  {
+    num: "101", group: "100번대", dest: "제일고순환(제일고우 반시계방향)",
+    directTime: "6:10", duration: "20분", note: "비고: 청암대 출발",
+    stops: [{ name: "청암대" }, { name: "제일고" }]
+  }
 ];
 
-const searchInput=document.getElementById("searchInput"),clearBtn=document.getElementById("clearBtn"),routeList=document.getElementById("routeList"),resultCount=document.getElementById("resultCount"),tabs=document.querySelectorAll(".tab"),quickNumsContainer=document.getElementById("quickNums"),darkToggle=document.getElementById("darkToggle");
-const btnModeSearch=document.getElementById("btnModeSearch"),btnModeMap=document.getElementById("btnModeMap"),searchControls=document.getElementById("searchControls"),viewSearch=document.getElementById("viewSearch"),viewMap=document.getElementById("viewMap");
-let currentGroup="ALL",selectedQuickNum=null,mapInitialized=false,leafletMap=null,activeMapGroup="ALL",selectedSegmentId=null;
+// 2. 일반 버스노선 데이터 (추후 추가용)
+const normalRoutes = [];
 
-const PTS = {
-  jeil: [34.9748, 127.4842, "제일고 (기점)"],
-  gagok: [34.9685, 127.4848, "가곡삼거리"],
-  gangbyeon: [34.9472, 127.4988, "강변고가교"],
-  cheongam: [34.9338, 127.4982, "청암대(박람회 서문측)"],
-  yeondong: [34.9225, 127.4795, "연동삼거리 (핵심 분기점)"],
-  hyocheon: [34.9135, 127.4745, "효천고"],
-  sangrim: [34.8645, 127.4425, "상림사거리 (80번대 분기)"],
-  jinmok: [34.8420, 127.4320, "진목 (82번 회차)"],
-  geocha: [34.8285, 127.4580, "거차 (85번 회차)"],
-  daedong84: [34.8450, 127.4020, "대동 (84번 회차)"],
-  bangok: [34.8350, 127.4180, "반곡 (86번 회차)"],
-  nagan: [34.9072, 127.3405, "낙안읍성 주차장 (61번 회차)"],
-  chogok: [34.8920, 127.4150, "초곡마을 (62번 회차)"],
-  sangsa: [34.9285, 127.4410, "상사면사무소·응령 (64번)"],
-  inan: [34.9025, 127.4620, "인안초등학교 (66번 회차)"],
-  seonpyeong: [34.9772, 127.5085, "선평삼거리 (동부·북부 분기)"],
-  hakgu: [35.0125, 127.4720, "학구삼거리"],
-  seopyeong: [34.9965, 127.4125, "서평교차로/승주 (60·63 분기)"],
-  seodong: [35.0250, 127.3880, "쌍암·서동마을 (60번 회차)"],
-  songgwang: [35.0020, 127.2750, "송광사·외장 (63번 회차)"],
-  sangbi: [34.9565, 127.5425, "상비교차로(성가롤로)"],
-  sindae: [34.9385, 127.5515, "신대교차로 (90·20번대 분기)"],
-  sandan: [34.9225, 127.5620, "산단교차로"],
-  waeseong: [34.9065, 127.5855, "현대제철·왜성 (25번 회차)"],
-  doseong: [34.8325, 127.6120, "해룡·여수공항·도성리 (96번)"],
-  yulchon_ic: [34.8725, 127.5540, "남해고속도로·율촌교차로"],
-  chungman: [34.8555, 127.5685, "충만한교회 (95·97 분기점)"],
-  hasa: [34.8385, 127.5750, "하사 (97번 직진 회차)"],
-  bongjeon: [34.8420, 127.5320, "상봉삼거리·봉전마을 (95번)"],
-  wangji: [34.9615, 127.5210, "왕지IC·NC백화점·대동 (56번)"],
-  bonghwa: [34.9580, 127.5050, "원용당·봉화터널·조례대림 (59번)"],
-  gwangyang: [34.9685, 127.6125, "덕례·광양터미널 (77·777번)"]
-};
+const searchInput = document.getElementById("searchInput"),
+      clearBtn = document.getElementById("clearBtn"),
+      routeList = document.getElementById("routeList"),
+      resultCount = document.getElementById("resultCount"),
+      tabs = document.querySelectorAll(".tab"),
+      quickNumsContainer = document.getElementById("quickNums"),
+      btnMenuDirect = document.getElementById("btnMenuDirect"),
+      btnMenuNormal = document.getElementById("btnMenuNormal"),
+      directControls = document.getElementById("directControls"),
+      viewDirect = document.getElementById("viewDirect"),
+      viewNormal = document.getElementById("viewNormal"),
+      stopFilterBanner = document.getElementById("stopFilterBanner"),
+      stopFilterText = document.getElementById("stopFilterText"),
+      clearStopFilter = document.getElementById("clearStopFilter");
 
-const mapSegments = [
-  { id: "m90_trunk", mgroup: "90·20번대", label: "공통줄기 (제일고→신대)", color: "#12b886", weight: 7, pts: ["jeil", "seonpyeong", "sangbi", "sindae"] },
-  { id: "m25", mgroup: "90·20번대", label: "25번 (산단·왜성)", color: "#ff922b", weight: 5, pts: ["sindae", "sandan", "waeseong"] },
-  { id: "m96", mgroup: "90·20번대", label: "96번 (해룡·여수공항·도성리)", color: "#845ef7", weight: 5, pts: ["sindae", "sandan", "doseong"] },
-  { id: "m9597_trunk", mgroup: "90·20번대", label: "95·97 공통 (율촌터널→충만한교회)", color: "#0ca678", weight: 6, pts: ["sindae", "yulchon_ic", "chungman"] },
-  { id: "m97", mgroup: "90·20번대", label: "97번 (직진·하사)", color: "#f06595", weight: 5, pts: ["chungman", "hasa"] },
-  { id: "m95", mgroup: "90·20번대", label: "95번 (상봉·봉전)", color: "#c08552", weight: 5, pts: ["chungman", "bongjeon"] },
+let currentGroup = "ALL",
+    selectedQuickNum = null,
+    selectedStopFilter = null;
 
-  { id: "m6080_trunk", mgroup: "연동축", label: "공통줄기 (제일고→청암대→연동)", color: "#12b886", weight: 7, pts: ["jeil", "gagok", "gangbyeon", "cheongam", "yeondong"] },
-  { id: "m64", mgroup: "연동축", label: "64번 (상사·응령)", color: "#339af0", weight: 5, pts: ["cheongam", "sangsa"] },
-  { id: "m61", mgroup: "연동축", label: "61번 (낙안읍성)", color: "#f06595", weight: 5, pts: ["yeondong", "nagan"] },
-  { id: "m62", mgroup: "연동축", label: "62번 (초곡마을)", color: "#c08552", weight: 5, pts: ["yeondong", "chogok"] },
-  { id: "m80_trunk", mgroup: "연동축", label: "80번대 공통 (연동→효천고→상림)", color: "#0ca678", weight: 6, pts: ["yeondong", "hyocheon", "sangrim"] },
-  { id: "m66", mgroup: "연동축", label: "66번 (인안초)", color: "#845ef7", weight: 5, pts: ["hyocheon", "inan"] },
-  { id: "m82", mgroup: "연동축", label: "82번 (진목)", color: "#ff922b", weight: 5, pts: ["sangrim", "jinmok"] },
-  { id: "m85", mgroup: "연동축", label: "85번 (거차)", color: "#e64980", weight: 5, pts: ["sangrim", "jinmok", "geocha"] },
-  { id: "m84", mgroup: "연동축", label: "84번 (송산·대동)", color: "#5c7cfa", weight: 5, pts: ["sangrim", "daedong84"] },
-  { id: "m86", mgroup: "연동축", label: "86번 (별량·반곡)", color: "#20c997", weight: 5, pts: ["sangrim", "bangok"] },
-
-  { id: "m6063_trunk", mgroup: "승주축", label: "60·63 공통 (제일고→학구→서평)", color: "#12b886", weight: 7, pts: ["jeil", "seonpyeong", "hakgu", "seopyeong"] },
-  { id: "m60", mgroup: "승주축", label: "60번 (쌍암·서동)", color: "#f06595", weight: 5, pts: ["seopyeong", "seodong"] },
-  { id: "m63", mgroup: "승주축", label: "63번 (송광사·외장)", color: "#c08552", weight: 5, pts: ["seopyeong", "songgwang"] },
-
-  { id: "m77", mgroup: "시내광양", label: "77·777번 (광양터미널)", color: "#339af0", weight: 6, pts: ["jeil", "seonpyeong", "sangbi", "gwangyang"] },
-  { id: "m56", mgroup: "시내광양", label: "56번 (왕지·NC·대동)", color: "#ff922b", weight: 5, pts: ["jeil", "seonpyeong", "wangji"] },
-  { id: "m59", mgroup: "시내광양", label: "59번 (봉화터널·조례대림)", color: "#845ef7", weight: 5, pts: ["jeil", "bonghwa"] }
-];
-
-let renderedLayers = [];
-const routeCache = {};
-
-async function fetchRoadGeometry(seg) {
-  if (routeCache[seg.id]) return routeCache[seg.id];
-  const coordsStr = seg.pts.map(k => `${PTS[k][1]},${PTS[k][0]}`).join(";");
-  try {
-    const res = await fetch(`https://router.project-osrm.org/route/v1/driving/${coordsStr}?overview=full&geometries=geojson`);
-    const data = await res.json();
-    if (data.routes && data.routes[0]) {
-      const latlngs = data.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
-      routeCache[seg.id] = latlngs;
-      return latlngs;
-    }
-  } catch (e) {}
-  return seg.pts.map(k => [PTS[k][0], PTS[k][1]]);
+// 초성 추출 함수
+const CHO = ["ㄱ","ㄲ","ㄴ","ㄷ","ㄸ","ㄹ","ㅁ","ㅂ","ㅃ","ㅅ","ㅆ","ㅇ","ㅈ","ㅉ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"];
+function getChosung(str) {
+  let res = "";
+  for (let i = 0; i < str.length; i++) {
+    const code = str.charCodeAt(i) - 44032;
+    if (code >= 0 && code <= 11171) res += CHO[Math.floor(code / 588)];
+    else res += str[i];
+  }
+  return res;
 }
 
-async function drawMapLayers() {
-  if (!leafletMap) return;
-  renderedLayers.forEach(l => leafletMap.removeLayer(l));
-  renderedLayers = [];
+function matchQuery(target, query) {
+  if (!query) return true;
+  const t = target.toLowerCase();
+  const q = query.toLowerCase();
+  if (t.includes(q)) return true;
+  if (/^[ㄱ-ㅎ\s]+$/.test(q)) {
+    return getChosung(t).includes(q.replace(/\s+/g, ""));
+  }
+  return false;
+}
 
-  const targetSegs = mapSegments.filter(s => activeMapGroup === "ALL" || s.mgroup === activeMapGroup);
-  
-  const legendEl = document.getElementById("mapLegend");
-  legendEl.innerHTML = targetSegs.map(s => `
-    <span class="c-chip ${selectedSegmentId === s.id ? "selected" : ""}" data-seg="${s.id}">
-      <i class="c-line" style="background:${s.color}"></i>${s.label}
-    </span>
+// 2단 메인 메뉴 전환
+btnMenuDirect.addEventListener("click", () => {
+  btnMenuDirect.classList.add("active");
+  btnMenuNormal.classList.remove("active");
+  directControls.classList.remove("hidden");
+  viewDirect.classList.remove("hidden");
+  viewNormal.classList.add("hidden");
+});
+
+btnMenuNormal.addEventListener("click", () => {
+  btnMenuNormal.classList.add("active");
+  btnMenuDirect.classList.remove("active");
+  directControls.classList.add("hidden");
+  viewDirect.classList.add("hidden");
+  viewNormal.classList.remove("hidden");
+});
+
+function renderQuickButtons() {
+  const list = directRoutes.filter(r => currentGroup === "ALL" || r.group === currentGroup);
+  quickNumsContainer.innerHTML = list.map(r => `
+    <button class="q-btn ${selectedQuickNum === r.num ? "active" : ""} ${r.directTime === "X" ? "is-x" : ""}" data-num="${r.num}">
+      ${r.num}${r.directTime === "X" ? "(X)" : ""}
+    </button>
   `).join("");
 
-  document.querySelectorAll(".c-chip").forEach(chip => {
-    chip.addEventListener("click", () => {
-      const id = chip.dataset.seg;
-      selectedSegmentId = selectedSegmentId === id ? null : id;
-      drawMapLayers();
-    });
-  });
-
-  const usedPts = new Set();
-  const bounds = [];
-
-  for (const seg of targetSegs) {
-    const isDimmed = selectedSegmentId && selectedSegmentId !== seg.id;
-    const latlngs = await fetchRoadGeometry(seg);
-    latlngs.forEach(ll => bounds.push(ll));
-    seg.pts.forEach(p => usedPts.add(p));
-
-    const poly = L.polyline(latlngs, {
-      color: seg.color,
-      weight: isDimmed ? 3 : seg.weight,
-      opacity: isDimmed ? 0.25 : 0.92
-    }).addTo(leafletMap);
-    poly.bindPopup(`<b>${seg.label}</b>`);
-    renderedLayers.push(poly);
-  }
-
-  usedPts.forEach(k => {
-    const [lat, lng, title] = PTS[k];
-    const isHub = title.includes("분기") || title.includes("기점");
-    const marker = L.circleMarker([lat, lng], {
-      radius: isHub ? 7 : 5,
-      fillColor: isHub ? "#ffd43b" : "#ffffff",
-      color: "#191f28",
-      weight: 2,
-      fillOpacity: 1
-    }).addTo(leafletMap);
-    marker.bindPopup(`<b>${title}</b>`);
-    renderedLayers.push(marker);
-  });
-
-  if (bounds.length > 0 && !selectedSegmentId) {
-    leafletMap.fitBounds(bounds, { padding: [25, 25] });
-  }
-}
-
-function initMap() {
-  if (mapInitialized) {
-    setTimeout(() => leafletMap.invalidateSize(), 120);
-    return;
-  }
-  leafletMap = L.map("map").setView([34.93, 127.49], 11);
-  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: '&copy; OpenStreetMap contributors',
-    maxZoom: 18
-  }).addTo(leafletMap);
-  mapInitialized = true;
-  setTimeout(() => leafletMap.invalidateSize(), 150);
-  drawMapLayers();
-}
-
-document.querySelectorAll(".m-tab").forEach(btn => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".m-tab").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    activeMapGroup = btn.dataset.mgroup;
-    selectedSegmentId = null;
-    drawMapLayers();
-  });
-});
-
-if(localStorage.getItem("bus_dark_mode")==="true"){document.body.classList.add("dark");darkToggle.textContent="☀️ 라이트"}
-darkToggle.addEventListener("click",()=>{
-  const e=document.body.classList.toggle("dark");
-  darkToggle.textContent=e?"☀️ 라이트":"🌙 다크모드";
-  localStorage.setItem("bus_dark_mode",e);
-});
-
-btnModeSearch.addEventListener("click",()=>{
-  btnModeSearch.classList.add("active");btnModeMap.classList.remove("active");
-  searchControls.classList.remove("hidden");viewSearch.classList.remove("hidden");viewMap.classList.add("hidden");
-});
-btnModeMap.addEventListener("click",()=>{
-  btnModeMap.classList.add("active");btnModeSearch.classList.remove("active");
-  searchControls.classList.add("hidden");viewSearch.classList.add("hidden");viewMap.classList.remove("hidden");
-  initMap();
-});
-
-function renderQuickButtons(){
-  const e=routes.filter(e=>"ALL"===currentGroup||e.group===currentGroup);
-  quickNumsContainer.innerHTML=e.map(e=>`<button class="q-btn ${selectedQuickNum===e.num?"active":""}" data-num="${e.num}">${e.num}</button>`).join("");
-  document.querySelectorAll(".q-btn").forEach(e=>{
-    e.addEventListener("click",()=>{
-      const t=e.dataset.num;
-      selectedQuickNum=selectedQuickNum===t?null:(searchInput.value="",t);
-      renderQuickButtons();render();
+  document.querySelectorAll(".q-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const n = btn.dataset.num;
+      selectedStopFilter = null;
+      if (selectedQuickNum === n) {
+        selectedQuickNum = null;
+      } else {
+        searchInput.value = "";
+        selectedQuickNum = n;
+      }
+      renderQuickButtons();
+      render();
     });
   });
 }
 
-function render(){
-  const e=searchInput.value.trim().toLowerCase();
-  clearBtn.style.display=e?"flex":"none";
-  const t=routes.filter(t=>("ALL"===currentGroup||t.group===currentGroup)&&(selectedQuickNum?t.num===selectedQuickNum:!e||t.num.toLowerCase().includes(e)||t.stops.some(t=>t.name.toLowerCase().includes(e))||(t.note?t.note.toLowerCase().includes(e):!1)));
-  resultCount.textContent=selectedQuickNum?`${selectedQuickNum}번 노선 선택됨 (버튼 재터치 시 전체보기)`:`표시 노선: ${t.length}개`;
-  routeList.innerHTML="";
-  t.forEach(t=>{
-    const n=document.createElement("div");n.className="card";
-    const r=t.stops.map((n,r)=>{
-      const o=0===r,a=r===t.stops.length-1,s=e&&n.name.toLowerCase().includes(e);
-      let c="",l="";
-      if(o){c="origin";l='<span class="badge-tag">기점</span>'}
-      else if(a){c="end";l='<span class="badge-tag">회차</span>'}
-      else if(n.important){c="important"}
-      return`<span class="stop ${c} ${s?"highlight":""}">${l}${n.name}</span>${a?"":'<span class="arrow">▶</span>'}`;
+function render() {
+  const q = searchInput.value.trim();
+  clearBtn.style.display = q ? "flex" : "none";
+
+  if (selectedStopFilter) {
+    stopFilterBanner.classList.remove("hidden");
+    stopFilterText.textContent = `📍 '${selectedStopFilter}' 경유 노선 모아보기`;
+  } else {
+    stopFilterBanner.classList.add("hidden");
+  }
+
+  const filtered = directRoutes.filter(r => {
+    const groupOk = currentGroup === "ALL" || r.group === currentGroup;
+    if (!groupOk) return false;
+    if (selectedQuickNum) return r.num === selectedQuickNum;
+    if (selectedStopFilter) {
+      return r.stops.some(s => s.name.includes(selectedStopFilter));
+    }
+    if (!q) return true;
+    return (
+      matchQuery(r.num, q) ||
+      matchQuery(r.dest, q) ||
+      matchQuery(r.directTime, q) ||
+      matchQuery(r.note, q) ||
+      r.stops.some(s => matchQuery(s.name, q))
+    );
+  });
+
+  if (selectedQuickNum) {
+    resultCount.textContent = `${selectedQuickNum}번 노선 선택됨 (버튼 재터치 시 전체보기)`;
+  } else {
+    resultCount.textContent = `표시 노선: ${filtered.length}개 (전체 ${directRoutes.length}개)`;
+  }
+
+  routeList.innerHTML = "";
+  filtered.forEach(r => {
+    const isX = r.directTime === "X";
+    const card = document.createElement("div");
+    card.className = `card ${isX ? "card-x" : ""}`;
+
+    const timeHtml = isX
+      ? `<span class="time-chip no-direct">직통시간: X (직통 없음)</span>`
+      : `<span class="time-chip">⏰ 직통시간: ${r.directTime}</span><span class="time-chip dur">⏱️ 소요: ${r.duration}</span>`;
+
+    const stopsHtml = r.stops.map((s, idx) => {
+      const isFirst = idx === 0 && r.stops.length > 1;
+      const isLast = idx === r.stops.length - 1;
+      const isMatch = (q && matchQuery(s.name, q)) || (selectedStopFilter && s.name.includes(selectedStopFilter));
+
+      let cls = "", tag = "";
+      if (isFirst) {
+        cls = "origin";
+        tag = '<span class="badge-tag">기점</span>';
+      } else if (isLast) {
+        cls = "end";
+        tag = '<span class="badge-tag">직통발</span>';
+      } else if (s.important) {
+        cls = "important";
+      }
+
+      const cleanStopName = s.name.split("(")[0].split("[")[0].trim();
+      return `<span class="stop ${cls} ${isMatch ? "highlight" : ""}" data-stop="${cleanStopName}">${tag}${s.name}</span>${idx === r.stops.length - 1 ? "" : '<span class="arrow">▶</span>'}`;
     }).join("");
-    const o=t.note?`<div class="note">${t.note}</div>`:"";
-    n.innerHTML=`<div class="card-header"><div class="title-wrap"><span class="bus-num">${t.num}번</span></div><span class="group-badge">${t.group}</span></div><div class="route-flow">${r}</div>${o}`;
-    routeList.appendChild(n);
+
+    const noteHtml = r.note ? `<div class="note">📌 ${r.note}</div>` : "";
+
+    card.innerHTML = `
+      <div class="card-header">
+        <div class="title-left">
+          <div class="num-row">
+            <span class="bus-num">${r.num}번</span>
+            <span class="dest-title">${r.dest}</span>
+          </div>
+        </div>
+        <span class="group-badge">${r.group}</span>
+      </div>
+      <div class="time-bar">${timeHtml}</div>
+      <div class="route-flow">${stopsHtml}</div>
+      ${noteHtml}
+    `;
+    routeList.appendChild(card);
+  });
+
+  // 정류장 칩 클릭 시 해당 정류장 경유 노선 필터링
+  document.querySelectorAll(".stop").forEach(el => {
+    el.addEventListener("click", () => {
+      const st = el.dataset.stop;
+      if (!st) return;
+      selectedQuickNum = null;
+      searchInput.value = "";
+      selectedStopFilter = selectedStopFilter === st ? null : st;
+      renderQuickButtons();
+      render();
+    });
   });
 }
 
-searchInput.addEventListener("input",()=>{selectedQuickNum=null;renderQuickButtons();render()});
-clearBtn.addEventListener("click",()=>{searchInput.value="";searchInput.focus();render()});
-tabs.forEach(e=>{
-  e.addEventListener("click",()=>{
-    tabs.forEach(e=>e.classList.remove("active"));e.classList.add("active");
-    currentGroup=e.dataset.group;selectedQuickNum=null;renderQuickButtons();render();
+clearStopFilter.addEventListener("click", () => {
+  selectedStopFilter = null;
+  render();
+});
+
+searchInput.addEventListener("input", () => {
+  selectedQuickNum = null;
+  selectedStopFilter = null;
+  renderQuickButtons();
+  render();
+});
+
+clearBtn.addEventListener("click", () => {
+  searchInput.value = "";
+  searchInput.focus();
+  render();
+});
+
+tabs.forEach(tab => {
+  tab.addEventListener("click", () => {
+    tabs.forEach(t => t.classList.remove("active"));
+    tab.classList.add("active");
+    currentGroup = tab.dataset.group;
+    selectedQuickNum = null;
+    selectedStopFilter = null;
+    renderQuickButtons();
+    render();
   });
 });
-renderQuickButtons();render();
+
+renderQuickButtons();
+render();
 </script>
 </body>
 </html>
