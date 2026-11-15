@@ -5,26 +5,66 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <title>순천 직통 노선 검색</title>
 <style>
-:root{--bg-body:#f2f4f7;--bg-header:#fff;--bg-card:#fff;--bg-input:#f9fafb;--bg-stop:#f2f4f6;--text-main:#191f28;--text-sub:#4e5968;--text-muted:#8b95a1;--border-color:#e5e8eb;--primary:#3182f6;--primary-light:#e8f3ff;--primary-text:#1b64da;--shadow:0 2px 8px rgba(0,0,0,.06);--card-shadow:0 1px 4px rgba(0,0,0,.04);--origin-bg:#e6fcf5;--origin-text:#087f5b;--origin-border:#63e6be;--end-bg:#e7f5ff;--end-text:#1864ab;--end-border:#4dabf7;--imp-bg:#fff0f0;--imp-text:#c92a2a;--imp-border:#ffa8a8}
-body.dark{--bg-body:#101318;--bg-header:#191d24;--bg-card:#1e232b;--bg-input:#262c36;--bg-stop:#2a303c;--text-main:#f2f4f6;--text-sub:#b0b8c1;--text-muted:#76808f;--border-color:#2f3642;--primary:#4593fc;--primary-light:#1e324d;--primary-text:#74b2ff;--shadow:0 2px 10px rgba(0,0,0,.4);--card-shadow:0 2px 6px rgba(0,0,0,.25);--origin-bg:#0c382c;--origin-text:#63e6be;--origin-border:#12b886;--end-bg:#133252;--end-text:#74c0fc;--end-border:#339af0;--imp-bg:#45181c;--imp-text:#ff8787;--imp-border:#fa5252}
+:root{
+  --bg-body:#f2f4f7;--bg-header:#fff;--bg-card:#fff;--bg-input:#f9fafb;--bg-stop:#f2f4f6;
+  --text-main:#191f28;--text-sub:#4e5968;--text-muted:#8b95a1;--border-color:#e5e8eb;
+  --primary:#3182f6;--primary-light:#e8f3ff;--primary-text:#1b64da;
+  --shadow:0 2px 8px rgba(0,0,0,.06);--card-shadow:0 1px 4px rgba(0,0,0,.04);
+  --origin-bg:#e6fcf5;--origin-text:#087f5b;--origin-border:#63e6be;
+  --end-bg:#e7f5ff;--end-text:#1864ab;--end-border:#4dabf7;
+  --imp-bg:#fff0f0;--imp-text:#c92a2a;--imp-border:#ffa8a8;
+  /* 계통도 전용 색상 */
+  --trunk-line:#12b886;--trunk-bg:#e6fcf5;--trunk-text:#087f5b;
+  --pink-bg:#fff0f6;--pink-border:#f783ac;--pink-text:#a61e4d;
+  --brown-bg:#f8f0e6;--brown-border:#d99b66;--brown-text:#7f4f24;
+  --purple-bg:#f3f0ff;--purple-border:#b197fc;--purple-text:#5f3dc4;
+  --orange-bg:#fff4e6;--orange-border:#ffa94d;--orange-text:#d9480f;
+  --blue-bg:#e7f5ff;--blue-border:#74c0fc;--blue-text:#1864ab;
+}
+body.dark{
+  --bg-body:#101318;--bg-header:#191d24;--bg-card:#1e232b;--bg-input:#262c36;--bg-stop:#2a303c;
+  --text-main:#f2f4f6;--text-sub:#b0b8c1;--text-muted:#76808f;--border-color:#2f3642;
+  --primary:#4593fc;--primary-light:#1e324d;--primary-text:#74b2ff;
+  --shadow:0 2px 10px rgba(0,0,0,.4);--card-shadow:0 2px 6px rgba(0,0,0,.25);
+  --origin-bg:#0c382c;--origin-text:#63e6be;--origin-border:#12b886;
+  --end-bg:#133252;--end-text:#74c0fc;--end-border:#339af0;
+  --imp-bg:#45181c;--imp-text:#ff8787;--imp-border:#fa5252;
+  /* 계통도 다크 색상 */
+  --trunk-line:#20c997;--trunk-bg:#0c382c;--trunk-text:#63e6be;
+  --pink-bg:#3b1526;--pink-border:#f06595;--pink-text:#faa2c1;
+  --brown-bg:#382618;--brown-border:#d99b66;--brown-text:#f3d9fa;
+  --brown-text:#ffd8a8;
+  --purple-bg:#271c47;--purple-border:#9775fa;--purple-text:#d0bfff;
+  --orange-bg:#3d200c;--orange-border:#ff922b;--orange-text:#ffc078;
+  --blue-bg:#133252;--blue-border:#4dabf7;--blue-text:#a5d8ff;
+}
 *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif}
-body{background-color:var(--bg-body);color:var(--text-main);padding-bottom:40px;transition:background-color .2s,color .2s}
-.header{position:sticky;top:0;background:var(--bg-header);padding:14px 16px;box-shadow:var(--shadow);z-index:100;border-bottom:1px solid var(--border-color)}
-.header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+body{background-color:var(--bg-body);color:var(--text-main);padding-bottom:44px;transition:background-color .2s,color .2s}
+.header{position:sticky;top:0;background:var(--bg-header);padding:12px 16px 10px;box-shadow:var(--shadow);z-index:100;border-bottom:1px solid var(--border-color)}
+.header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .header h1{font-size:18px;font-weight:800;color:var(--text-main)}
-.dark-toggle{background:var(--bg-stop);color:var(--text-main);border:1px solid var(--border-color);padding:6px 12px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:4px}
+.dark-toggle{background:var(--bg-stop);color:var(--text-main);border:1px solid var(--border-color);padding:6px 12px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer}
+
+/* 메인 모드 전환 탭 (검색 vs 분기 계통도) */
+.mode-switch{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--bg-stop);padding:4px;border-radius:12px;margin-bottom:10px}
+.mode-btn{padding:8px 0;border:none;border-radius:9px;background:transparent;color:var(--text-sub);font-size:14px;font-weight:800;cursor:pointer;transition:.15s}
+.mode-btn.active{background:var(--bg-card);color:var(--primary);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+
 .search-box{position:relative;display:flex;align-items:center}
-.search-box input{width:100%;padding:11px 38px 11px 14px;font-size:16px;border:2px solid var(--primary);border-radius:12px;outline:none;background:var(--bg-input);color:var(--text-main)}
+.search-box input{width:100%;padding:10px 38px 10px 14px;font-size:16px;border:2px solid var(--primary);border-radius:12px;outline:none;background:var(--bg-input);color:var(--text-main)}
 .search-box input::placeholder{color:var(--text-muted)}
 .clear-btn{position:absolute;right:10px;background:var(--text-muted);color:var(--bg-header);border:none;border-radius:50%;width:22px;height:22px;font-size:13px;font-weight:700;cursor:pointer;display:none;align-items:center;justify-content:center}
-.tabs{display:flex;gap:6px;overflow-x:auto;padding-top:10px;scrollbar-width:none}
+
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-top:9px;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
 .tab{padding:6px 12px;border-radius:20px;border:1px solid var(--border-color);background:var(--bg-card);font-size:13px;font-weight:700;color:var(--text-sub);white-space:nowrap;cursor:pointer}
 .tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+
 .quick-nums{display:flex;gap:6px;overflow-x:auto;padding-top:8px;margin-top:8px;border-top:1px dashed var(--border-color);scrollbar-width:none}
 .quick-nums::-webkit-scrollbar{display:none}
-.q-btn{padding:6px 11px;border-radius:8px;border:1px solid var(--border-color);background:var(--bg-stop);color:var(--text-main);font-size:14px;font-weight:800;white-space:nowrap;cursor:pointer}
+.q-btn{padding:5px 11px;border-radius:8px;border:1px solid var(--border-color);background:var(--bg-stop);color:var(--text-main);font-size:14px;font-weight:800;white-space:nowrap;cursor:pointer}
 .q-btn.active{background:#ff922b;color:#fff;border-color:#ff922b}
+
 .container{padding:14px 16px;max-width:600px;margin:0 auto}
 .legend{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--text-sub);margin-bottom:10px;align-items:center}
 .legend-item{display:flex;align-items:center;gap:4px;font-weight:600}
@@ -33,9 +73,9 @@ body{background-color:var(--bg-body);color:var(--text-main);padding-bottom:40px;
 .dot.end{background:var(--end-border)}
 .dot.imp{background:var(--imp-border)}
 .count{font-size:13px;color:var(--text-muted);margin-bottom:10px;font-weight:600}
+
 .card{background:var(--bg-card);border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:var(--card-shadow);border:1px solid var(--border-color)}
 .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.title-wrap{display:flex;align-items:center;gap:8px}
 .bus-num{font-size:22px;font-weight:900;color:var(--primary);letter-spacing:-.5px}
 .group-badge{font-size:12px;background:var(--primary-light);color:var(--primary-text);padding:4px 8px;border-radius:6px;font-weight:700}
 .route-flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:14.5px;line-height:1.5;color:var(--text-main)}
@@ -49,29 +89,75 @@ body{background-color:var(--bg-body);color:var(--text-main);padding-bottom:40px;
 .stop.highlight{background:#ffd43b!important;font-weight:900!important;color:#111!important;border:1.5px solid #f59f00!important}
 .arrow{color:var(--text-muted);font-size:11px;font-weight:700}
 .note{margin-top:12px;padding:9px 11px;background:var(--imp-bg);color:var(--imp-text);border:1px solid var(--imp-border);border-radius:8px;font-size:13.5px;font-weight:700}
+
+/* 분기 계통도 스타일 */
+.diagram-card{background:var(--bg-card);border-radius:16px;padding:16px;margin-bottom:16px;border:1px solid var(--border-color);box-shadow:var(--card-shadow)}
+.diag-title{font-size:16px;font-weight:900;margin-bottom:4px;color:var(--text-main);display:flex;align-items:center;justify-content:space-between}
+.diag-sub{font-size:12.5px;color:var(--text-muted);margin-bottom:14px;font-weight:600}
+
+/* 초록색 공통 줄기 */
+.trunk-box{position:relative;padding-left:22px;margin-left:6px;border-left:5px solid var(--trunk-line)}
+.trunk-node{position:relative;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.trunk-node::before{content:"";position:absolute;left:-29px;width:13px;height:13px;border-radius:50%;background:var(--trunk-line);border:3px solid var(--bg-card)}
+.trunk-pill{background:var(--trunk-bg);color:var(--trunk-text);border:1.5px solid var(--trunk-line);padding:5px 10px;border-radius:8px;font-size:14px;font-weight:800}
+.trunk-tag{font-size:11px;background:var(--trunk-line);color:#fff;padding:2px 6px;border-radius:5px;font-weight:800}
+
+/* 분기 갈래 박스 */
+.branch-group{margin:10px 0 14px 0;display:flex;flex-direction:column;gap:8px}
+.branch-item{position:relative;padding:10px 12px;border-radius:11px;border-width:1.5px;border-style:solid;display:flex;flex-direction:column;gap:5px}
+.branch-head{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.b-num{font-size:15px;font-weight:900;padding:2px 8px;border-radius:6px;color:#fff}
+.b-dir{font-size:12px;font-weight:800;padding:2px 6px;border-radius:5px;background:rgba(0,0,0,.08)}
+body.dark .b-dir{background:rgba(255,255,255,.12)}
+.b-path{font-size:13.5px;font-weight:700;line-height:1.45}
+
+/* 분기 색상 테마 */
+.c-pink{background:var(--pink-bg);border-color:var(--pink-border);color:var(--pink-text)}
+.c-pink .b-num{background:#e64980}
+.c-brown{background:var(--brown-bg);border-color:var(--brown-border);color:var(--brown-text)}
+.c-brown .b-num{background:#b0723c}
+.c-purple{background:var(--purple-bg);border-color:var(--purple-border);color:var(--purple-text)}
+.c-purple .b-num{background:#7950f2}
+.c-orange{background:var(--orange-bg);border-color:var(--orange-border);color:var(--orange-text)}
+.c-orange .b-num{background:#f76707}
+.c-blue{background:var(--blue-bg);border-color:var(--blue-border);color:var(--blue-text)}
+.c-blue .b-num{background:#228be6}
+
+.hidden{display:none!important}
 </style>
 </head>
 <body>
+
 <div class="header">
   <div class="header-top">
-    <h1>🚌 순천 직통 노선 검색</h1>
+    <h1>🚌 순천 직통 노선 가이드</h1>
     <button class="dark-toggle" id="darkToggle">🌙 다크모드</button>
   </div>
-  <div class="search-box">
-    <input type="text" id="searchInput" placeholder="경유지(예: 선평, 율촌) 또는 번호 검색" autocomplete="off" />
-    <button class="clear-btn" id="clearBtn">✕</button>
+  
+  <div class="mode-switch">
+    <button class="mode-btn active" id="btnModeSearch">🔍 노선 검색</button>
+    <button class="mode-btn" id="btnModeMap">🗺️ 분기 계통도</button>
   </div>
-  <div class="tabs" id="tabContainer">
-    <button class="tab active" data-group="ALL">전체</button>
-    <button class="tab" data-group="60번대">60번대</button>
-    <button class="tab" data-group="80번대">80번대</button>
-    <button class="tab" data-group="90·20번대">90·20번대</button>
-    <button class="tab" data-group="50번대">50번대</button>
-    <button class="tab" data-group="70번대">70번대</button>
+
+  <div id="searchControls">
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="경유지(예: 선평, 율촌) 또는 번호 검색" autocomplete="off" />
+      <button class="clear-btn" id="clearBtn">✕</button>
+    </div>
+    <div class="tabs" id="tabContainer">
+      <button class="tab active" data-group="ALL">전체</button>
+      <button class="tab" data-group="60번대">60번대</button>
+      <button class="tab" data-group="80번대">80번대</button>
+      <button class="tab" data-group="90·20번대">90·20번대</button>
+      <button class="tab" data-group="50번대">50번대</button>
+      <button class="tab" data-group="70번대">70번대</button>
+    </div>
+    <div class="quick-nums" id="quickNums"></div>
   </div>
-  <div class="quick-nums" id="quickNums"></div>
 </div>
-<div class="container">
+
+<!-- 1. 노선 검색 화면 -->
+<div class="container" id="viewSearch">
   <div class="legend">
     <span class="legend-item"><i class="dot origin"></i>기점(출발)</span>
     <span class="legend-item"><i class="dot end"></i>회차지(종점)</span>
@@ -80,6 +166,129 @@ body{background-color:var(--bg-body);color:var(--text-main);padding-bottom:40px;
   <div class="count" id="resultCount">총 0개 노선</div>
   <div id="routeList"></div>
 </div>
+
+<!-- 2. 색상 분기 계통도 화면 -->
+<div class="container hidden" id="viewMap">
+  <div class="legend" style="margin-bottom:14px">
+    <span class="legend-item"><i class="dot" style="background:var(--trunk-line)"></i>공통 메인 구간(초록)</span>
+    <span class="legend-item"><i class="dot" style="background:#e64980"></i>노선별 갈래 색상 구분</span>
+  </div>
+
+  <!-- 권역 1: 90·20번대 -->
+  <div class="diagram-card">
+    <div class="diag-title"><span>① 90·20번대 (신대·율촌·해룡 방면)</span></div>
+    <div class="diag-sub">신대교차로에서 1차 분기 → 충만한교회에서 2차 분기</div>
+    <div class="trunk-box">
+      <div class="trunk-node"><span class="trunk-pill">제일고 (기점)</span><span class="trunk-tag">공통</span></div>
+      <div class="trunk-node"><span class="trunk-pill">선평삼거리 → 상비교차로(성가롤로)</span></div>
+      <div class="trunk-node"><span class="trunk-pill">신대교차로 (1차 분기점)</span></div>
+      
+      <div class="branch-group">
+        <div class="branch-item c-orange">
+          <div class="branch-head"><span class="b-num">25번</span><span class="b-dir">산단 좌회전 방면</span></div>
+          <div class="b-path">산단교차로 [좌] ▶ 현대제철(신성교) [좌] ▶ 왜성(정류장) [우]</div>
+        </div>
+        <div class="branch-item c-purple">
+          <div class="branch-head"><span class="b-num">96번</span><span class="b-dir">해룡·여수공항 방면</span></div>
+          <div class="b-path">산단교차로 ▶ 해룡육교 ▶ 호두삼거리 ▶ 신풍삼거리 ▶ 애양병원 ▶ 도성리마을회관</div>
+        </div>
+      </div>
+
+      <div class="trunk-node"><span class="trunk-pill">남해고속도로(시점) → 율촌터널 → 율촌교차로</span><span class="trunk-tag">95·97 공통</span></div>
+      <div class="trunk-node"><span class="trunk-pill">충만한교회 (2차 분기점)</span></div>
+
+      <div class="branch-group">
+        <div class="branch-item c-pink">
+          <div class="branch-head"><span class="b-num">97번</span><span class="b-dir">순천·해룡 방면 (직진)</span></div>
+          <div class="b-path">충만한교회(순천·해룡 방면) ▶ 하사 (회차)</div>
+        </div>
+        <div class="branch-item c-brown">
+          <div class="branch-head"><span class="b-num">95번</span><span class="b-dir">여수시청·상봉 방면</span></div>
+          <div class="b-path">충만한교회(상봉 방면) ▶ 상봉삼거리 ▶ 광암마을회관 ▶ 봉전마을회관 (회차)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 권역 2: 60·80번대 (청암대·연동 축) -->
+  <div class="diagram-card">
+    <div class="diag-title"><span>② 60·80번대 (청암대·연동삼거리 축)</span></div>
+    <div class="diag-sub">청암대·연동삼거리까지 공통 직진 후 낙안·상사·별량으로 분기</div>
+    <div class="trunk-box">
+      <div class="trunk-node"><span class="trunk-pill">제일고 → 가곡삼거리 → 강변고가교</span><span class="trunk-tag">공통</span></div>
+      <div class="trunk-node"><span class="trunk-pill">청암대(박람회 서문측)</span></div>
+      
+      <div class="branch-group">
+        <div class="branch-item c-blue">
+          <div class="branch-head"><span class="b-num">64번</span><span class="b-dir">상사 방면 조기 분기</span></div>
+          <div class="b-path">상사면사무소 ▶ 상사초등학교 ▶ 응령마을 (회차)</div>
+        </div>
+      </div>
+
+      <div class="trunk-node"><span class="trunk-pill">연동삼거리 (핵심 분기점)</span></div>
+
+      <div class="branch-group">
+        <div class="branch-item c-pink">
+          <div class="branch-head"><span class="b-num">61번</span><span class="b-dir">낙안읍성 방면</span></div>
+          <div class="b-path">연동삼거리 ▶ 낙안읍성(주차장) (회차)</div>
+        </div>
+        <div class="branch-item c-brown">
+          <div class="branch-head"><span class="b-num">62번</span><span class="b-dir">초곡 방면</span></div>
+          <div class="b-path">연동삼거리 ▶ 초곡마을입구 ▶ 초곡마을 (회차)</div>
+        </div>
+      </div>
+
+      <div class="trunk-node"><span class="trunk-pill">효천고 (66번 및 80번대 공통)</span></div>
+
+      <div class="branch-group">
+        <div class="branch-item c-purple">
+          <div class="branch-head"><span class="b-num">66번</span><span class="b-dir">인안초 방면</span></div>
+          <div class="b-path">효천고 ▶ 인월사거리 ▶ 인안초등학교 (회차)</div>
+        </div>
+        <div class="branch-item c-orange">
+          <div class="branch-head"><span class="b-num">82·84·85·86번</span><span class="b-dir">상림사거리 이후 4갈래 분기</span></div>
+          <div class="b-path">
+            • <b>82번:</b> 상림 ▶ 진목입구 ▶ 진목<br/>
+            • <b>85번:</b> 상림 ▶ 진목입구 ▶ 죽림삼거리 ▶ 거차<br/>
+            • <b>84번:</b> 상림 ▶ 사계절삼거리 ▶ 구룡교 ▶ 송산초 ▶ 대동<br/>
+            • <b>86번:</b> 상림 ▶ 별량면사무소 ▶ 고가다리밑 ▶ 반곡
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 권역 3: 60번대 (승주·송광사 축) & 50·70번대 -->
+  <div class="diagram-card">
+    <div class="diag-title"><span>③ 승주·송광사(60·63) & 광양·시내(50·70)</span></div>
+    <div class="diag-sub">북부 방면 및 시내·광양 직통 갈래</div>
+    <div class="trunk-box">
+      <div class="trunk-node"><span class="trunk-pill">제일고 → 선평삼거리 → 학구 → 서평교차로</span><span class="trunk-tag">60·63 공통</span></div>
+      <div class="branch-group">
+        <div class="branch-item c-pink">
+          <div class="branch-head"><span class="b-num">60번</span><span class="b-dir">쌍암·서동 방면</span></div>
+          <div class="b-path">서평교차로 ▶ 쌍암기사식당 ▶ 서동마을</div>
+        </div>
+        <div class="branch-item c-brown">
+          <div class="branch-head"><span class="b-num">63번</span><span class="b-dir">송광사·외장 방면</span></div>
+          <div class="b-path">서평교차로 ▶ 문길삼거리 ▶ 송광사삼거리 ▶ 곡천터미널 ▶ 외장</div>
+        </div>
+        <div class="branch-item c-blue">
+          <div class="branch-head"><span class="b-num">77 · 777번</span><span class="b-dir">광양터미널 직통 (동일 코스)</span></div>
+          <div class="b-path">제일고 ▶ 선평 ▶ 상비교차로 ▶ 덕례사거리 ▶ 광양터미널</div>
+        </div>
+        <div class="branch-item c-purple">
+          <div class="branch-head"><span class="b-num">56 · 59번</span><span class="b-dir">시내권 직통</span></div>
+          <div class="b-path">
+            • <b>56번:</b> 선평 ▶ 왕지IC ▶ NC백화점[좌] ▶ 범암교[좌] ▶ 대동(왕조가든)<br/>
+            • <b>59번:</b> 원용당교[좌] ▶ 신흥길 ▶ 봉화터널 ▶ 한듬정육점[좌] ▶ 조례대림A
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 const routes = [
   { num: "60", group: "60번대", stops: [{ name: "제일고" }, { name: "선평삼거리" }, { name: "학구삼거리" }, { name: "서평교차로(승주읍사거리)" }, { name: "쌍암기사식당" }, { name: "서동마을" }] },
@@ -101,13 +310,66 @@ const routes = [
   { num: "77", group: "70번대", stops: [{ name: "제일고" }, { name: "선평삼거리" }, { name: "상비교차로(성가롤로)" }, { name: "덕례사거리" }, { name: "터미널교차로" }, { name: "광양터미널(도립미술관)" }] },
   { num: "777", group: "70번대", stops: [{ name: "제일고" }, { name: "선평삼거리" }, { name: "상비교차로(성가롤로)" }, { name: "덕례사거리" }, { name: "터미널교차로" }, { name: "광양터미널(도립미술관)" }] }
 ];
+
 const searchInput=document.getElementById("searchInput"),clearBtn=document.getElementById("clearBtn"),routeList=document.getElementById("routeList"),resultCount=document.getElementById("resultCount"),tabs=document.querySelectorAll(".tab"),quickNumsContainer=document.getElementById("quickNums"),darkToggle=document.getElementById("darkToggle");
+const btnModeSearch=document.getElementById("btnModeSearch"),btnModeMap=document.getElementById("btnModeMap"),searchControls=document.getElementById("searchControls"),viewSearch=document.getElementById("viewSearch"),viewMap=document.getElementById("viewMap");
 let currentGroup="ALL",selectedQuickNum=null;
+
 if(localStorage.getItem("bus_dark_mode")==="true"){document.body.classList.add("dark");darkToggle.textContent="☀️ 라이트"}
 darkToggle.addEventListener("click",()=>{const e=document.body.classList.toggle("dark");darkToggle.textContent=e?"☀️ 라이트":"🌙 다크모드",localStorage.setItem("bus_dark_mode",e)});
-function renderQuickButtons(){const e=routes.filter(e=>"ALL"===currentGroup||e.group===currentGroup);quickNumsContainer.innerHTML=e.map(e=>`<button class="q-btn ${selectedQuickNum===e.num?"active":""}" data-num="${e.num}">${e.num}</button>`).join(""),document.querySelectorAll(".q-btn").forEach(e=>{e.addEventListener("click",()=>{const t=e.dataset.num;selectedQuickNum=selectedQuickNum===t?null:(searchInput.value="",t),renderQuickButtons(),render()})})}
-function render(){const e=searchInput.value.trim().toLowerCase();clearBtn.style.display=e?"flex":"none";const t=routes.filter(t=>("ALL"===currentGroup||t.group===currentGroup)&&(selectedQuickNum?t.num===selectedQuickNum:!e||t.num.toLowerCase().includes(e)||t.stops.some(t=>t.name.toLowerCase().includes(e))||(t.note?t.note.toLowerCase().includes(e):!1)));resultCount.textContent=selectedQuickNum?`${selectedQuickNum}번 노선 선택됨 (버튼 재터치 시 전체보기)`:`표시 노선: ${t.length}개`,routeList.innerHTML="",t.forEach(t=>{const n=document.createElement("div");n.className="card";const r=t.stops.map((n,r)=>{const o=0===r,a=r===t.stops.length-1,s=e&&n.name.toLowerCase().includes(e);let c="",l="";return o?(c="origin",l='<span class="badge-tag">기점</span>'):a?(c="end",l='<span class="badge-tag">회차</span>'):n.important&&(c="important"),`<span class="stop ${c} ${s?"highlight":""}">${l}${n.name}</span>${a?"":'<span class="arrow">▶</span>'}`}).join(""),o=t.note?`<div class="note">${t.note}</div>`:"";n.innerHTML=`<div class="card-header"><div class="title-wrap"><span class="bus-num">${t.num}번</span></div><span class="group-badge">${t.group}</span></div><div class="route-flow">${r}</div>${o}`,routeList.appendChild(n)})}
-searchInput.addEventListener("input",()=>{selectedQuickNum=null,renderQuickButtons(),render()}),clearBtn.addEventListener("click",()=>{searchInput.value="",searchInput.focus(),render()}),tabs.forEach(e=>{e.addEventListener("click",()=>{tabs.forEach(e=>e.classList.remove("active")),e.classList.add("active"),currentGroup=e.dataset.group,selectedQuickNum=null,renderQuickButtons(),render()})}),renderQuickButtons(),render();
+
+btnModeSearch.addEventListener("click",()=>{
+  btnModeSearch.classList.add("active");btnModeMap.classList.remove("active");
+  searchControls.classList.remove("hidden");viewSearch.classList.remove("hidden");viewMap.classList.add("hidden");
+});
+btnModeMap.addEventListener("click",()=>{
+  btnModeMap.classList.add("active");btnModeSearch.classList.remove("active");
+  searchControls.classList.add("hidden");viewSearch.classList.add("hidden");viewMap.classList.remove("hidden");
+});
+
+function renderQuickButtons(){
+  const e=routes.filter(e=>"ALL"===currentGroup||e.group===currentGroup);
+  quickNumsContainer.innerHTML=e.map(e=>`<button class="q-btn ${selectedQuickNum===e.num?"active":""}" data-num="${e.num}">${e.num}</button>`).join("");
+  document.querySelectorAll(".q-btn").forEach(e=>{
+    e.addEventListener("click",()=>{
+      const t=e.dataset.num;
+      selectedQuickNum=selectedQuickNum===t?null:(searchInput.value="",t);
+      renderQuickButtons();render();
+    });
+  });
+}
+
+function render(){
+  const e=searchInput.value.trim().toLowerCase();
+  clearBtn.style.display=e?"flex":"none";
+  const t=routes.filter(t=>("ALL"===currentGroup||t.group===currentGroup)&&(selectedQuickNum?t.num===selectedQuickNum:!e||t.num.toLowerCase().includes(e)||t.stops.some(t=>t.name.toLowerCase().includes(e))||(t.note?t.note.toLowerCase().includes(e):!1)));
+  resultCount.textContent=selectedQuickNum?`${selectedQuickNum}번 노선 선택됨 (버튼 재터치 시 전체보기)`:`표시 노선: ${t.length}개`;
+  routeList.innerHTML="";
+  t.forEach(t=>{
+    const n=document.createElement("div");n.className="card";
+    const r=t.stops.map((n,r)=>{
+      const o=0===r,a=r===t.stops.length-1,s=e&&n.name.toLowerCase().includes(e);
+      let c="",l="";
+      if(o){c="origin";l='<span class="badge-tag">기점</span>'}
+      else if(a){c="end";l='<span class="badge-tag">회차</span>'}
+      else if(n.important){c="important"}
+      return`<span class="stop ${c} ${s?"highlight":""}">${l}${n.name}</span>${a?"":'<span class="arrow">▶</span>'}`;
+    }).join("");
+    const o=t.note?`<div class="note">${t.note}</div>`:"";
+    n.innerHTML=`<div class="card-header"><div class="title-wrap"><span class="bus-num">${t.num}번</span></div><span class="group-badge">${t.group}</span></div><div class="route-flow">${r}</div>${o}`;
+    routeList.appendChild(n);
+  });
+}
+
+searchInput.addEventListener("input",()=>{selectedQuickNum=null;renderQuickButtons();render()});
+clearBtn.addEventListener("click",()=>{searchInput.value="";searchInput.focus();render()});
+tabs.forEach(e=>{
+  e.addEventListener("click",()=>{
+    tabs.forEach(e=>e.classList.remove("active"));e.classList.add("active");
+    currentGroup=e.dataset.group;selectedQuickNum=null;renderQuickButtons();render();
+  });
+});
+renderQuickButtons();render();
 </script>
 </body>
 </html>
