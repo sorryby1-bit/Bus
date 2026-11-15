@@ -88,7 +88,10 @@ body{background-color:var(--bg-body);color:var(--text-main);padding-bottom:30px;
 .c-chip.selected{border-color:var(--text-main);transform:scale(1.03)}
 .c-line{width:14px;height:5px;border-radius:3px;display:inline-block}
 
-#map{width:100%;height:62vh;min-height:420px;border-radius:16px;border:1.5px solid var(--border-color);box-shadow:var(--card-shadow);z-index:1}
+#map{width:100%;height:62vh;min-height:420px;border-radius:16px;border:1.5px solid var(--border-color);box-shadow:var(--card-shadow);z-index:1;background:#e9ecef}
+body.dark #map{background:#191d24}
+/* 다크모드 시 배경 지도 타일만 눈이 편한 다크 톤으로 변환 (노선 색상은 그대로 유지) */
+body.dark .leaflet-tile-pane{filter:invert(100%) hue-rotate(180deg) brightness(88%) contrast(92%) saturate(75%)}
 .map-status{font-size:11.5px;color:var(--text-muted);margin-top:6px;text-align:right;font-weight:600}
 .hidden{display:none!important}
 </style>
@@ -145,7 +148,7 @@ body{background-color:var(--bg-body);color:var(--text-main);padding-bottom:30px;
   </div>
   <div class="color-legend" id="mapLegend"></div>
   <div id="map"></div>
-  <div class="map-status" id="mapStatus">지도 위 동그라미(분기점)를 터치하면 상세 방향이 표시됩니다.</div>
+  <div class="map-status" id="mapStatus">색상 버튼을 누르면 해당 노선만 진하게 강조됩니다.</div>
 </div>
 
 <script>
@@ -172,9 +175,8 @@ const routes = [
 
 const searchInput=document.getElementById("searchInput"),clearBtn=document.getElementById("clearBtn"),routeList=document.getElementById("routeList"),resultCount=document.getElementById("resultCount"),tabs=document.querySelectorAll(".tab"),quickNumsContainer=document.getElementById("quickNums"),darkToggle=document.getElementById("darkToggle");
 const btnModeSearch=document.getElementById("btnModeSearch"),btnModeMap=document.getElementById("btnModeMap"),searchControls=document.getElementById("searchControls"),viewSearch=document.getElementById("viewSearch"),viewMap=document.getElementById("viewMap");
-let currentGroup="ALL",selectedQuickNum=null,mapInitialized=false,leafletMap=null,tileLayer=null,activeMapGroup="ALL",selectedSegmentId=null;
+let currentGroup="ALL",selectedQuickNum=null,mapInitialized=false,leafletMap=null,activeMapGroup="ALL",selectedSegmentId=null;
 
-// 주요 정류장 좌표 (순천시 실제 위치)
 const PTS = {
   jeil: [34.9748, 127.4842, "제일고 (기점)"],
   gagok: [34.9685, 127.4848, "가곡삼거리"],
@@ -210,9 +212,7 @@ const PTS = {
   gwangyang: [34.9685, 127.6125, "덕례·광양터미널 (77·777번)"]
 };
 
-// 색상별 도로 경로 구간 정의 (공통 초록 줄기 + 분기 노선별 파스텔/고대비 색상)
 const mapSegments = [
-  // 90·20번대 축
   { id: "m90_trunk", mgroup: "90·20번대", label: "공통줄기 (제일고→신대)", color: "#12b886", weight: 7, pts: ["jeil", "seonpyeong", "sangbi", "sindae"] },
   { id: "m25", mgroup: "90·20번대", label: "25번 (산단·왜성)", color: "#ff922b", weight: 5, pts: ["sindae", "sandan", "waeseong"] },
   { id: "m96", mgroup: "90·20번대", label: "96번 (해룡·여수공항·도성리)", color: "#845ef7", weight: 5, pts: ["sindae", "sandan", "doseong"] },
@@ -220,7 +220,6 @@ const mapSegments = [
   { id: "m97", mgroup: "90·20번대", label: "97번 (직진·하사)", color: "#f06595", weight: 5, pts: ["chungman", "hasa"] },
   { id: "m95", mgroup: "90·20번대", label: "95번 (상봉·봉전)", color: "#c08552", weight: 5, pts: ["chungman", "bongjeon"] },
 
-  // 60·80번대 연동축
   { id: "m6080_trunk", mgroup: "연동축", label: "공통줄기 (제일고→청암대→연동)", color: "#12b886", weight: 7, pts: ["jeil", "gagok", "gangbyeon", "cheongam", "yeondong"] },
   { id: "m64", mgroup: "연동축", label: "64번 (상사·응령)", color: "#339af0", weight: 5, pts: ["cheongam", "sangsa"] },
   { id: "m61", mgroup: "연동축", label: "61번 (낙안읍성)", color: "#f06595", weight: 5, pts: ["yeondong", "nagan"] },
@@ -232,12 +231,10 @@ const mapSegments = [
   { id: "m84", mgroup: "연동축", label: "84번 (송산·대동)", color: "#5c7cfa", weight: 5, pts: ["sangrim", "daedong84"] },
   { id: "m86", mgroup: "연동축", label: "86번 (별량·반곡)", color: "#20c997", weight: 5, pts: ["sangrim", "bangok"] },
 
-  // 승주·송광사 축
   { id: "m6063_trunk", mgroup: "승주축", label: "60·63 공통 (제일고→학구→서평)", color: "#12b886", weight: 7, pts: ["jeil", "seonpyeong", "hakgu", "seopyeong"] },
   { id: "m60", mgroup: "승주축", label: "60번 (쌍암·서동)", color: "#f06595", weight: 5, pts: ["seopyeong", "seodong"] },
   { id: "m63", mgroup: "승주축", label: "63번 (송광사·외장)", color: "#c08552", weight: 5, pts: ["seopyeong", "songgwang"] },
 
-  // 시내·광양 축
   { id: "m77", mgroup: "시내광양", label: "77·777번 (광양터미널)", color: "#339af0", weight: 6, pts: ["jeil", "seonpyeong", "sangbi", "gwangyang"] },
   { id: "m56", mgroup: "시내광양", label: "56번 (왕지·NC·대동)", color: "#ff922b", weight: 5, pts: ["jeil", "seonpyeong", "wangji"] },
   { id: "m59", mgroup: "시내광양", label: "59번 (봉화터널·조례대림)", color: "#845ef7", weight: 5, pts: ["jeil", "bonghwa"] }
@@ -245,19 +242,6 @@ const mapSegments = [
 
 let renderedLayers = [];
 const routeCache = {};
-
-function updateTileTheme() {
-  if (!leafletMap) return;
-  if (tileLayer) leafletMap.removeLayer(tileLayer);
-  const isDark = document.body.classList.contains("dark");
-  const url = isDark
-    ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-    : "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png";
-  tileLayer = L.tileLayer(url, {
-    attribution: '&copy; OpenStreetMap &copy; CARTO',
-    maxZoom: 18
-  }).addTo(leafletMap);
-}
 
 async function fetchRoadGeometry(seg) {
   if (routeCache[seg.id]) return routeCache[seg.id];
@@ -281,7 +265,6 @@ async function drawMapLayers() {
 
   const targetSegs = mapSegments.filter(s => activeMapGroup === "ALL" || s.mgroup === activeMapGroup);
   
-  // 범례 칩 렌더링
   const legendEl = document.getElementById("mapLegend");
   legendEl.innerHTML = targetSegs.map(s => `
     <span class="c-chip ${selectedSegmentId === s.id ? "selected" : ""}" data-seg="${s.id}">
@@ -309,13 +292,12 @@ async function drawMapLayers() {
     const poly = L.polyline(latlngs, {
       color: seg.color,
       weight: isDimmed ? 3 : seg.weight,
-      opacity: isDimmed ? 0.25 : 0.9
+      opacity: isDimmed ? 0.25 : 0.92
     }).addTo(leafletMap);
     poly.bindPopup(`<b>${seg.label}</b>`);
     renderedLayers.push(poly);
   }
 
-  // 주요 분기점 마커 찍기
   usedPts.forEach(k => {
     const [lat, lng, title] = PTS[k];
     const isHub = title.includes("분기") || title.includes("기점");
@@ -337,12 +319,16 @@ async function drawMapLayers() {
 
 function initMap() {
   if (mapInitialized) {
-    setTimeout(() => leafletMap.invalidateSize(), 100);
+    setTimeout(() => leafletMap.invalidateSize(), 120);
     return;
   }
   leafletMap = L.map("map").setView([34.93, 127.49], 11);
-  updateTileTheme();
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: '&copy; OpenStreetMap contributors',
+    maxZoom: 18
+  }).addTo(leafletMap);
   mapInitialized = true;
+  setTimeout(() => leafletMap.invalidateSize(), 150);
   drawMapLayers();
 }
 
@@ -361,7 +347,6 @@ darkToggle.addEventListener("click",()=>{
   const e=document.body.classList.toggle("dark");
   darkToggle.textContent=e?"☀️ 라이트":"🌙 다크모드";
   localStorage.setItem("bus_dark_mode",e);
-  updateTileTheme();
 });
 
 btnModeSearch.addEventListener("click",()=>{
