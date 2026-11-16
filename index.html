@@ -64,7 +64,7 @@ body{background-color:var(--bg-body);color:var(--text-main);padding-bottom:52px}
 .drawer-toggle{padding:7px 12px;border-radius:10px;border:1px solid var(--primary);background:var(--bg-card);color:var(--primary-text);font-size:13px;font-weight:900;cursor:pointer}
 .drawer-toggle.open{background:var(--primary);color:#fff}
 
-/* 접이식 상세 필터 서랍 (평소엔 숨김 -> 화면 깔끔 유지) */
+/* 접이식 상세 필터 서랍 */
 .filter-drawer{background:var(--bg-card);border:1px solid var(--border-color);border-radius:14px;padding:13px;margin-bottom:12px;display:flex;flex-direction:column;gap:12px}
 .filter-section-title{font-size:12.5px;font-weight:900;color:var(--text-sub);margin-bottom:6px;display:flex;align-items:center;justify-content:space-between}
 .chip-row{display:flex;flex-wrap:wrap;gap:6px}
@@ -185,7 +185,6 @@ body{background-color:var(--bg-body);color:var(--text-main);padding-bottom:52px}
 
 <!-- 1. 직통 화면 -->
 <div class="container" id="viewDirect">
-  <!-- 누구나 한눈에 쓰는 쉬운 버튼 줄 -->
   <div class="easy-bar">
     <div class="easy-left">
       <button class="pill-btn" id="sortTimeBtn">⏰ 시간순 보기</button>
@@ -195,7 +194,6 @@ body{background-color:var(--bg-body);color:var(--text-main);padding-bottom:52px}
     <button class="drawer-toggle" id="toggleDrawerBtn">🎛️ 필터 더보기 ▼</button>
   </div>
 
-  <!-- 필요할 때만 열어보는 깔끔한 필터 서랍 -->
   <div class="filter-drawer hidden" id="filterDrawer">
     <div>
       <div class="filter-section-title">
@@ -414,7 +412,8 @@ const directRoutes = [
     stops: [
       { name: "제일고" }, { name: "가곡삼거리" }, { name: "강변고가교(로터리까지)" },
       { name: "청암대(박람회 서문측으로)" }, { name: "연동삼거리" }, { name: "효천고" },
-      { name: "상림사거리" }, { name: "진목입구" }, { name: "죽림삼거리" }, { name: "거차" }
+      { name: "상림사거리" }, { name: "사계절삼거리(사계절오일뱅크) [좌]", important: true },
+      { name: "전동지게차" }, { name: "풀빌라기억해" }, { name: "거차" }
     ]
   },
   {
@@ -504,7 +503,6 @@ function getGarageDepartRange(directTime, durationMin) {
   return `${formatHHMM(base - durationMin - 5)}~${formatHHMM(base - durationMin + 5)}`;
 }
 
-// 지금 시간 기준 '곧 출발' 판별 (차고지 출차 권장 20분 전 ~ 직통발 시각 사이)
 function isUrgentNow(directTime, durationMin) {
   const base = parseMinutes(directTime);
   if (base === null || !durationMin) return false;
@@ -552,7 +550,6 @@ let currentGroup = "ALL",
     selectedDur = null,
     editingMemoNum = null;
 
-// 현재 시각 표시
 function updateClock() {
   const now = new Date();
   nowClock.textContent = `현재 ${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}`;
@@ -578,7 +575,6 @@ function matchQuery(target, query) {
   return false;
 }
 
-// 2단 메인 메뉴
 btnMenuDirect.addEventListener("click", () => {
   btnMenuDirect.classList.add("active");
   btnMenuNormal.classList.remove("active");
@@ -594,7 +590,6 @@ btnMenuNormal.addEventListener("click", () => {
   viewNormal.classList.remove("hidden");
 });
 
-// 쉬운 버튼 3종
 sortTimeBtn.addEventListener("click", () => {
   sortByTime = !sortByTime;
   sortTimeBtn.classList.toggle("on", sortByTime);
@@ -612,14 +607,12 @@ keyStopsOnlyBtn.addEventListener("click", () => {
   render();
 });
 
-// 필터 서랍 열기/닫기
 toggleDrawerBtn.addEventListener("click", () => {
   const isHidden = filterDrawer.classList.toggle("hidden");
   toggleDrawerBtn.classList.toggle("open", !isHidden);
   toggleDrawerBtn.textContent = isHidden ? "🎛️ 필터 더보기 ▼" : "🎛️ 필터 닫기 ▲";
 });
 
-// 서랍 내부 칩 선택
 document.querySelectorAll("#areaChips .f-chip").forEach(btn => {
   btn.addEventListener("click", () => {
     const val = btn.dataset.area;
@@ -699,7 +692,6 @@ function render() {
   const q = searchInput.value.trim();
   clearBtn.style.display = q ? "flex" : "none";
 
-  // 필터 더보기 버튼에 활성 개수 표시
   const activeDrawerCount = [selectedArea, selectedAxis, selectedDur].filter(Boolean).length;
   const isDrawerOpen = !filterDrawer.classList.contains("hidden");
   toggleDrawerBtn.textContent = isDrawerOpen
@@ -762,7 +754,6 @@ function render() {
          <span class="time-chip dur">약 ${r.durationMin}분 (±5분)</span>
          <span class="time-chip dep">🚌 차고지 출발 ${depRange}</span>`;
 
-    // '중요 구간만' 스위치가 켜져 있으면 기점, 직통발, 빨간 주의 구간, 좌/우 회전 구간만 쏙 추려서 보여줌
     const displayStops = keyStopsOnly && r.stops.length > 2
       ? r.stops.filter((s, idx) => idx === 0 || idx === r.stops.length - 1 || s.important || s.name.includes("[좌]") || s.name.includes("[우]"))
       : r.stops;
@@ -868,7 +859,6 @@ function render() {
   });
 }
 
-// 백업 모달
 const backupModal = document.getElementById("backupModal"),
       backupTextarea = document.getElementById("backupTextarea");
 
